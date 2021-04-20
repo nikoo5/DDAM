@@ -5,16 +5,13 @@
     android:id="@+id/homeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.Home">
+    tools:context=".Fragments.HomeFragment">
 
-    <TextView
-        android:id="@+id/lblLogedIn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Loged In!"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvUsers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="horizontal"
+        tools:layout_editor_absoluteX="200dp"
+        tools:layout_editor_absoluteY="261dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
