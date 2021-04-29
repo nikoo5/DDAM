@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Homie</string>
+    <string name="home">Home</string>
+    <string name="likes">Likes</string>
+    <string name="user">User</string>
+    <string name="logout">Log Out</string>
+</resources>
