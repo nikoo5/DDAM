@@ -51,8 +51,9 @@ class LoginFragment : Fragment() {
             requireActivity().finish();
         } else {
             tvLoginForgetPass.setOnClickListener {
-                val action = LoginFragmentDirections.toForgetPassword();
-                v.findNavController().navigate(action);
+                Snackbar.make(v, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show();
+//                val action = LoginFragmentDirections.toForgetPassword();
+//                v.findNavController().navigate(action);
             }
 
             tvLoginNewUser.setOnClickListener {
@@ -61,7 +62,7 @@ class LoginFragment : Fragment() {
             }
 
             btnLogIn.setOnClickListener {
-                btnLogIn.isEnabled = true;
+                btnLogIn.isEnabled = false;
 
                 val email = etEmail.editText?.text.toString();
                 val pass = etPassword.editText?.text.toString();
@@ -76,10 +77,12 @@ class LoginFragment : Fragment() {
                                 requireActivity().finish();
                             } else {
                                 Snackbar.make(v, resources.getString(R.string.login_error_email_password), Snackbar.LENGTH_SHORT).show();
+                                btnLogIn.isEnabled = true;
+                                btnLogIn.text = resources.getString(R.string.login);
                             }
-                            btnLogIn.isEnabled = true;
-                            btnLogIn.text = resources.getString(R.string.login);
                         }
+                } else {
+                    btnLogIn.isEnabled = true;
                 }
             }
         }

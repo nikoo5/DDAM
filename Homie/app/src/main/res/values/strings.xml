@@ -2,27 +2,56 @@
     <string name="app_name">Homie</string>
     <string name="slogan">Encontrar tu casa, nunca fue tan facil</string>
 
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+
     <string name="home">Home</string>
     <string name="likes">Favoritos</string>
     <string name="user">Usuario</string>
     <string name="settings">Ajustes</string>
 
+    <string name="future_feature">Proximamente</string>
+
     <string name="forget_password">Olvidé mi contraseña</string>
     <string name="new_user">Nuevo Usuario</string>
+
+    <string name="new_user_txt_name">Nombre</string>
+    <string name="new_user_txt_lastname">Apellido</string>
+    <string name="new_user_txt_email">Correo Electrónico</string>
+    <string name="new_user_txt_reemail">Repetir Correo Electrónico</string>
+    <string name="new_user_txt_password">Contraseña</string>
+    <string name="new_user_txt_repassword">Repetir Contraseña</string>
+    <string name="new_user_create">Crear Usuario</string>
+    <string name="new_user_error_empty_name">El nombre no puede estar vacio</string>
+    <string name="new_user_error_wrong_name">El nombre no es valido</string>
+    <string name="new_user_error_empty_lastname">El apellido no puede estar vacio</string>
+    <string name="new_user_error_wrong_lastname">El apellido no es valido</string>
+    <string name="new_user_error_empty_email">El correo electrónico no puede estar vacio</string>
+    <string name="new_user_error_wrong_email">El correo electrónico no es válido</string>
+    <string name="new_user_error_empty_reemail">El correo electrónico no puede estar vacio</string>
+    <string name="new_user_error_wrong_reemail">Los correos electrónicos no coinciden</string>
+    <string name="new_user_error_empty_password">La contraseña no puede estar vacia</string>
+    <string name="new_user_error_wrong_password">La contraseña no contiene un formato valido</string>
+    <string name="new_user_error_empty_repassword">La contraseña no puede estar vacia</string>
+    <string name="new_user_error_wrong_repassword">Las contraseñas no coinciden</string>
+    <string name="new_user_creating">Creando...</string>
+    <string name="new_user_success">Usuario creado!</string>
+    <string name="new_user_fail">Ocurrió un error al intentar crear el usuario</string>
+    <string name="new_user_fail_update">Ocurrió un error al intentar guardar la información personal</string>
 
     <string name="login_title">Iniciar Sesión</string>
     <string name="login_txt_email">Correo Electrónico</string>
     <string name="login_txt_password">Contraseña</string>
     <string name="login_forget_password">Olvidé mi contraseña!</string>
     <string name="login_new_user">Nuevo Usuario? Crea uno ahora!</string>
-    <string name="login_error_empty_email">El correo electrónico no puede estar vacio</string>
-    <string name="login_error_wrong_email">El correo electrónico no es válido</string>
-    <string name="login_error_empty_password">La contraseña no puede estar vacia</string>
-    <string name="login_error_wrong_password">La contraseña no contiene un formato valido</string>
+    <string name="login_error_empty_email">@string/new_user_error_empty_email</string>
+    <string name="login_error_wrong_email">@string/new_user_error_wrong_email</string>
+    <string name="login_error_empty_password">@string/new_user_error_empty_password</string>
+    <string name="login_error_wrong_password">@string/new_user_error_wrong_password</string>
     <string name="login_error_email_password">Usuario y/o contraseña incorrectos</string>
     <string name="login">Log In</string>
     <string name="login_in">Ingresando...</string>
+
     <string name="logout">Log Out</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="logout_question">Estas seguro que quieres cerrar sesión?</string>
 </resources>

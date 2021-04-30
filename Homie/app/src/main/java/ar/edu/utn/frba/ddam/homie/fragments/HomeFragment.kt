@@ -13,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment() {
     lateinit var v : View
-    lateinit var bLogOut : Button;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,29 +25,10 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_home, container, false)
 
-        bLogOut = v.findViewById(R.id.bLogOut);
-
         return v;
     }
 
     override fun onStart() {
         super.onStart()
-
-        bLogOut.setOnClickListener {
-//            val profileUpdate = UserProfileChangeRequest.Builder()
-//                .setDisplayName("Usuario|Prueba")
-//                .setPhotoUri(Uri.parse("https://images.unsplash.com/photo-1535713875002-d1d0cf377fde"))
-//                .build();
-//
-//            user.updateProfile(profileUpdate).addOnCompleteListener(requireActivity()) { task ->
-//                if(task.isSuccessful) {
-//
-//                }
-//            }
-
-            FirebaseAuth.getInstance().signOut();
-            startActivity(Intent(requireContext(), LoginActivity::class.java));
-            requireActivity().finish();
-        }
     }
 }
