@@ -19,6 +19,7 @@ import androidx.navigation.ui.setupWithNavController
 import ar.edu.utn.frba.ddam.homie.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun settingHandler(menuItem : MenuItem) {
+        Snackbar.make(dlMain, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show();
     }
 
     fun logOutHandler(menuItem : MenuItem) {

@@ -39,6 +39,13 @@
     <string name="new_user_fail">Ocurrió un error al intentar crear el usuario</string>
     <string name="new_user_fail_update">Ocurrió un error al intentar guardar la información personal</string>
 
+    <string name="forget_password_txt_message">Para recuperar tu contraseña, ingresa tu correo electrónico y te enviaremos un email con las instrucciones para cambiar tu clave</string>
+    <string name="forget_password_error_empty_email">@string/new_user_error_empty_email</string>
+    <string name="forget_password_error_wrong_email">@string/new_user_error_wrong_email</string>
+    <string name="forget_password_send">Enviar</string>
+    <string name="forget_password_sending">Enviando...</string>
+    <string name="forget_password_sent">Si el mail es correcto, te enviaremos un correo</string>
+
     <string name="login_title">Iniciar Sesión</string>
     <string name="login_txt_email">Correo Electrónico</string>
     <string name="login_txt_password">Contraseña</string>

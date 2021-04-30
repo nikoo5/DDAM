@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ar.edu.utn.frba.ddam.homie.R
@@ -51,14 +53,21 @@ class LoginFragment : Fragment() {
             requireActivity().finish();
         } else {
             tvLoginForgetPass.setOnClickListener {
-                Snackbar.make(v, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show();
-//                val action = LoginFragmentDirections.toForgetPassword();
-//                v.findNavController().navigate(action);
+                val action = LoginFragmentDirections.toForgetPassword();
+                v.findNavController().navigate(action);
             }
 
             tvLoginNewUser.setOnClickListener {
                 val action = LoginFragmentDirections.toNewUser();
                 v.findNavController().navigate(action);
+            }
+
+            etPassword.editText?.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    btnLogIn.performClick();
+                }
+
+                true
             }
 
             btnLogIn.setOnClickListener {

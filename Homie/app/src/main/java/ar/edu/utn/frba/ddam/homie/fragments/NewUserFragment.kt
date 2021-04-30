@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import ar.edu.utn.frba.ddam.homie.R
 import ar.edu.utn.frba.ddam.homie.activities.MainActivity
 import com.google.android.material.snackbar.Snackbar
