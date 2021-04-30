@@ -1,7 +1,28 @@
 <resources>
     <string name="app_name">Homie</string>
+    <string name="slogan">Encontrar tu casa, nunca fue tan facil</string>
+
     <string name="home">Home</string>
-    <string name="likes">Likes</string>
-    <string name="user">User</string>
+    <string name="likes">Favoritos</string>
+    <string name="user">Usuario</string>
+    <string name="settings">Ajustes</string>
+
+    <string name="forget_password">Olvidé mi contraseña</string>
+    <string name="new_user">Nuevo Usuario</string>
+
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="login_txt_email">Correo Electrónico</string>
+    <string name="login_txt_password">Contraseña</string>
+    <string name="login_forget_password">Olvidé mi contraseña!</string>
+    <string name="login_new_user">Nuevo Usuario? Crea uno ahora!</string>
+    <string name="login_error_empty_email">El correo electrónico no puede estar vacio</string>
+    <string name="login_error_wrong_email">El correo electrónico no es válido</string>
+    <string name="login_error_empty_password">La contraseña no puede estar vacia</string>
+    <string name="login_error_wrong_password">La contraseña no contiene un formato valido</string>
+    <string name="login_error_email_password">Usuario y/o contraseña incorrectos</string>
+    <string name="login">Log In</string>
+    <string name="login_in">Ingresando...</string>
     <string name="logout">Log Out</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

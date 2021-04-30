@@ -10,9 +10,12 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import ar.edu.utn.frba.ddam.homie.R
+import com.google.firebase.auth.FirebaseAuth
 
 class SplashActivity : AppCompatActivity() {
     private var SPLAH_TIME : Long = 3000;
+
+    lateinit var mAuth: FirebaseAuth
 
     lateinit var topAnim : Animation
     lateinit var bottomAnim : Animation
@@ -22,22 +25,30 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mAuth = FirebaseAuth.getInstance();
 
         if (supportActionBar != null) supportActionBar?.hide();
 
         setContentView(R.layout.activity_splash)
 
-        topAnim = AnimationUtils.loadAnimation(this, R.anim.anim_top);
-        bottomAnim = AnimationUtils.loadAnimation(this, R.anim.anim_bottom);
-        ivSplashCity = findViewById(R.id.ivSplashCity);
-        tvSplashText = findViewById(R.id.tvSplashText);
-
-        tvSplashText.startAnimation(topAnim);
-        ivSplashCity.startAnimation(bottomAnim);
-
-        Handler().postDelayed({
+        val currentUser = mAuth.currentUser;
+        if(currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java));
             finish();
-        }, SPLAH_TIME)
+        } else {
+
+            topAnim = AnimationUtils.loadAnimation(this, R.anim.anim_top);
+            bottomAnim = AnimationUtils.loadAnimation(this, R.anim.anim_bottom);
+            ivSplashCity = findViewById(R.id.ivSplashCity);
+            tvSplashText = findViewById(R.id.tvSplashText);
+
+            tvSplashText.startAnimation(topAnim);
+            ivSplashCity.startAnimation(bottomAnim);
+
+            Handler().postDelayed({
+                startActivity(Intent(this, LoginActivity::class.java));
+                finish();
+            }, SPLAH_TIME)
+        }
     }
 }
