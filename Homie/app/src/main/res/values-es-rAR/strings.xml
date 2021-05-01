@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Homie</string>
     <string name="slogan">Encontrar tu casa, nunca fue tan facil</string>
 
     <string name="yes">Si</string>
@@ -61,7 +61,7 @@
 
     <string name="logout">Log Out</string>
     <string name="logout_question">Estas seguro que quieres cerrar sesión?</string>
-    
+
     <string name="posts_types_rental">Alquiler</string>
     <string name="posts_types_sale">Venta</string>
     <string name="posts_status_available">Disponible</string>
