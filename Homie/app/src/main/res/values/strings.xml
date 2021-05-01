@@ -61,4 +61,16 @@
 
     <string name="logout">Log Out</string>
     <string name="logout_question">Estas seguro que quieres cerrar sesión?</string>
+    
+    <string name="posts_types_rental">Alquiler</string>
+    <string name="posts_types_sale">Venta</string>
+    <string name="posts_status_available">Disponible</string>
+    <string name="posts_status_reserved">Reservado</string>
+    <string name="buildings_types_building">Departamento</string>
+    <string name="buildings_types_house">Casa</string>
+    <string name="room">Ambiente</string>
+    <string name="expenses">Expensas</string>
+
+    <string name="success_fetching_posts">Datos actualizados</string>
+    <string name="error_fetching_posts">No se pudo actualizar los datos.</string>
 </resources>
