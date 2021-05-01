@@ -19,7 +19,10 @@ import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import kotlin.math.exp
 
-class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: (String) -> Boolean) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
+class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: (String) -> Unit, val onPostLike: (String, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
+//    lateinit var onPostClick : (String) -> Boolean;
+//    lateinit var onPostLike : (String, Boolean) -> Boolean;
+
     companion object {
         private val TAG = "PostListAdapter"
     }
@@ -53,6 +56,9 @@ class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: 
         holder.setPrice(post.price, post.currency);
         holder.setExpenses(post.expenses, post.currency);
 
+        holder.getLikeCheckBox().setOnCheckedChangeListener {_, _ ->}
+        holder.setLike(post.like);
+
         holder.getCardLayout().setOnClickListener {
             onPostClick(post.uid);
         }
@@ -64,6 +70,7 @@ class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: 
             } else {
                 cb.backgroundTintList = cb.context.getColorStateList(R.color.black);
             }
+            onPostLike(post.uid, isChecked);
         }
 
     }
@@ -142,5 +149,13 @@ class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: 
             tv.text = "+ " + currency + " " + NumberFormat.getIntegerInstance().format(expenses).replace(",", ".") + " " + view.resources.getString(R.string.expenses);
         }
 
+        fun setLike(like : Boolean) {
+            val cb = view.findViewById<CheckBox>(R.id.cbPostLike);
+            cb.isChecked = like;
+
+            if(like) {
+                cb.backgroundTintList = cb.context.getColorStateList(R.color.red_900);
+            }
+        }
     }
 }

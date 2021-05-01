@@ -8,6 +8,7 @@ class Post {
     var price : Int
     var expenses : Int
     var currency : String
+    var like : Boolean = false
 
     constructor(uid: String, type: String, status : String, building: Building, price: Int, expenses : Int, currency : String) {
         this.uid = uid

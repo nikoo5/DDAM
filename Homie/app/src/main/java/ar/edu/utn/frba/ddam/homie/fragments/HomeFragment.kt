@@ -1,11 +1,14 @@
 package ar.edu.utn.frba.ddam.homie.fragments
 
 import android.os.Bundle
+import android.text.BoringLayout
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.MultiAutoCompleteTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ar.edu.utn.frba.ddam.homie.R
@@ -14,10 +17,8 @@ import ar.edu.utn.frba.ddam.homie.entities.Building
 import ar.edu.utn.frba.ddam.homie.entities.Location
 import ar.edu.utn.frba.ddam.homie.entities.Post
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
 
 class HomeFragment : Fragment() {
@@ -25,8 +26,18 @@ class HomeFragment : Fragment() {
     lateinit var btn : Button
     lateinit var rvPosts : RecyclerView
 
+    lateinit var mAuth: FirebaseAuth
+    lateinit var db : FirebaseDatabase
+    lateinit var postsRef : DatabaseReference
+    lateinit var likesRef : DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseDatabase.getInstance();
+
+        postsRef = db.getReference("posts");
+        likesRef = db.getReference("likes");
     }
 
     override fun onCreateView(
@@ -66,37 +77,64 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadPosts() {
-        val db = FirebaseDatabase.getInstance();
-        val ref = db.getReference("posts");
-
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val posts = dataSnapshot.getValue<MutableList<Post>>()
-
+        postsRef.get()
+            .addOnSuccessListener { dataSnapshot ->
+                val posts = dataSnapshot.getValue<MutableList<Post>>()!!
                 val llm = LinearLayoutManager(context);
                 rvPosts.setHasFixedSize(true);
                 rvPosts.layoutManager = llm;
 
-                val postListAdapter = PostListAdapter(posts!!) { x ->
-                    onPostClick(x);
-                }
+                likesRef.child(mAuth.currentUser.uid).get()
+                    .addOnSuccessListener { dataSnapshot ->
+                        var likes : MutableList<String>? = dataSnapshot.getValue<MutableList<String>>()
+                        if(likes == null) likes = mutableListOf();
 
-                rvPosts.adapter = postListAdapter;
-                Snackbar.make(v, resources.getString(R.string.success_fetching_posts), Snackbar.LENGTH_SHORT).show();
+                        for (uid in likes) {
+                           for (i in posts.indices) {
+                               if(posts[i].uid == uid) {
+                                   posts[i].like = true;
+                                   break;
+                               }
+                           }
+                        }
+                    }
+                    .addOnCompleteListener {
+                        val postListAdapter = PostListAdapter(posts, onPostClick = { x -> onPostClick(x) }, onPostLike = { x, y -> onPostLike(x, y)});
+                        rvPosts.adapter = postListAdapter;
+                        Snackbar.make(v, resources.getString(R.string.success_fetching_posts), Snackbar.LENGTH_SHORT).show();
+                    }
             }
-
-            override fun onCancelled(error: DatabaseError) {
+            .addOnFailureListener {
                 Snackbar.make(v, resources.getString(R.string.error_fetching_posts), Snackbar.LENGTH_SHORT).show();
             }
-        })
     }
 
-    fun onPostClick (uid : String) : Boolean {
-        //Snackbar.make(v, uid.toString(), Snackbar.LENGTH_SHORT).show();
-        return false;
+    fun onPostClick (uid : String) {
+        Snackbar.make(v, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show();
     }
 
-    fun onPostLike (uid : String, like : Boolean) : Boolean {
-        return false;
+    fun onPostLike (uid : String, like : Boolean) {
+        likesRef.child(mAuth.currentUser.uid).get()
+            .addOnSuccessListener { dataSnapshot ->
+                var likes : MutableList<String>? = dataSnapshot.getValue<MutableList<String>>()
+                if(likes == null) likes = mutableListOf();
+
+                var update : Boolean = false;
+
+                val alreadyLike = likes.find { x -> x == uid }
+                if(like && alreadyLike == null) {
+                    likes.add(uid)
+                    update = true;
+                } else if (!like && alreadyLike != null) {
+                    likes.remove(uid);
+                    update = true;
+                }
+
+                if(update) {
+                    likesRef.child(mAuth.currentUser.uid).setValue(likes).addOnFailureListener {
+                        loadPosts();
+                    }
+                }
+            }
     }
 }
