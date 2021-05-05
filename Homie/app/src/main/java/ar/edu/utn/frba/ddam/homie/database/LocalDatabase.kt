@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.*
 import ar.edu.utn.frba.ddam.homie.entities.*
 
-@Database(entities = [Post::class, Building::class, Location::class, User::class, UserPosts::class], version = 2, exportSchema = false)
+@Database(entities = [Post::class, Building::class, Location::class, User::class, UserPosts::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 public abstract class LocalDatabase : RoomDatabase() {
 

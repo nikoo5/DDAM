@@ -20,18 +20,20 @@ class User {
     @ColumnInfo(name = "last_name")
     var lastName : String
     var email : String
+    var image : String
     @ColumnInfo(name = "last_login")
     var lastLogin : Date
     @ColumnInfo(name = "last_modification")
     var lastModification : Date
 
     @Ignore
-    constructor(dbId : String, name : String, lastName : String, email : String) {
+    constructor(dbId : String, name : String, lastName : String, email : String, image : String) {
         this.id = 0;
         this.dbId = dbId
         this.name = name
         this.lastName = lastName
         this.email = email
+        this.image = image
         this.lastLogin = Date()
         this.lastModification = Date()
     }
@@ -40,6 +42,7 @@ class User {
         this.name = "";
         this.lastName = "";
         this.email = ""
+        this.image = ""
         this.lastLogin = Date()
         this.lastModification = Date()
     }

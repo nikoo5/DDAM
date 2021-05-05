@@ -53,7 +53,7 @@ class HomeFragment : Fragment() {
         userDao = localDB?.userDao()
 
         //val name = mAuth.currentUser?.displayName?.split('|')!!
-        //LocalDatabase.initData(v.context, User(mAuth.currentUser?.uid!!, name[0], name[1], mAuth.currentUser?.email!!))
+        //LocalDatabase.initData(v.context, User(mAuth.currentUser?.uid!!, name[0], name[1], mAuth.currentUser?.email!!, "https://firebasestorage.googleapis.com/v0/b/homie-b5662.appspot.com/o/profile_pictures%2FeqgfQsrUqtTo8AaTS3nkS3Ca5G73%2FuLXIzdwgnKk7.jpg?alt=media&token=ed9091fb-7dbc-4fe3-b2cb-cb32bb64a9d1"))
 
         btn = v.findViewById(R.id.btn);
         rvPosts = v.findViewById(R.id.rvPosts)
