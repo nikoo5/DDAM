@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.ddam.homie.entities
 
 class Post {
-    var uid : String
+    var id : Int
     var type : String
     var status : String
     var building : Building
@@ -10,8 +10,8 @@ class Post {
     var currency : String
     var like : Boolean = false
 
-    constructor(uid: String, type: String, status : String, building: Building, price: Int, expenses : Int, currency : String) {
-        this.uid = uid
+    constructor(id: Int, type: String, status : String, building: Building, price: Int, expenses : Int, currency : String) {
+        this.id = id
         this.type = type
         this.status = status
         this.building = building
@@ -21,7 +21,7 @@ class Post {
     }
 
     constructor(){
-        this.uid = ""
+        this.id = 0
         this.type = ""
         this.status = ""
         this.building = Building()

@@ -3,6 +3,6 @@
     <item android:title="@string/home" android:icon="@drawable/ic_home" android:id="@+id/homeFragment" />
     <item android:title="@string/likes" android:icon="@drawable/ic_heart_solid" android:id="@+id/likesFragment" />
     <item android:title="@string/user" android:icon="@drawable/ic_user_solid" android:id="@+id/userFragment" />
-    <item android:title="@string/settings" android:icon="@drawable/ic_cog" android:onClick="settingHandler"></item>
+    <item android:title="@string/settings" android:icon="@drawable/ic_cog" android:id="@+id/settingsActivity"></item>
     <item android:title="@string/logout" android:icon="@drawable/ic_sign_out" android:onClick="logOutHandler" />
 </menu>

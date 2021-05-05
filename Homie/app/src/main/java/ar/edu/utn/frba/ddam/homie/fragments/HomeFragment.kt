@@ -55,6 +55,7 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+
         loadPosts();
 
 //        btn.setOnClickListener {
@@ -86,12 +87,12 @@ class HomeFragment : Fragment() {
 
                 likesRef.child(mAuth.currentUser.uid).get()
                     .addOnSuccessListener { dataSnapshot ->
-                        var likes : MutableList<String>? = dataSnapshot.getValue<MutableList<String>>()
+                        var likes : MutableList<Int>? = dataSnapshot.getValue<MutableList<Int>>()
                         if(likes == null) likes = mutableListOf();
 
-                        for (uid in likes) {
+                        for (id in likes) {
                            for (i in posts.indices) {
-                               if(posts[i].uid == uid) {
+                               if(posts[i].id == id) {
                                    posts[i].like = true;
                                    break;
                                }
@@ -101,7 +102,7 @@ class HomeFragment : Fragment() {
                     .addOnCompleteListener {
                         val postListAdapter = PostListAdapter(posts, onPostClick = { x -> onPostClick(x) }, onPostLike = { x, y -> onPostLike(x, y)});
                         rvPosts.adapter = postListAdapter;
-                        Snackbar.make(v, resources.getString(R.string.success_fetching_posts), Snackbar.LENGTH_SHORT).show();
+                        //Snackbar.make(v, resources.getString(R.string.success_fetching_posts), Snackbar.LENGTH_SHORT).show();
                     }
             }
             .addOnFailureListener {
@@ -109,24 +110,24 @@ class HomeFragment : Fragment() {
             }
     }
 
-    fun onPostClick (uid : String) {
+    fun onPostClick (id : Int) {
         Snackbar.make(v, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show();
     }
 
-    fun onPostLike (uid : String, like : Boolean) {
+    fun onPostLike (id : Int, like : Boolean) {
         likesRef.child(mAuth.currentUser.uid).get()
             .addOnSuccessListener { dataSnapshot ->
-                var likes : MutableList<String>? = dataSnapshot.getValue<MutableList<String>>()
+                var likes : MutableList<Int>? = dataSnapshot.getValue<MutableList<Int>>()
                 if(likes == null) likes = mutableListOf();
 
                 var update : Boolean = false;
 
-                val alreadyLike = likes.find { x -> x == uid }
+                val alreadyLike = likes.find { x -> x == id }
                 if(like && alreadyLike == null) {
-                    likes.add(uid)
+                    likes.add(id)
                     update = true;
                 } else if (!like && alreadyLike != null) {
-                    likes.remove(uid);
+                    likes.remove(id);
                     update = true;
                 }
 

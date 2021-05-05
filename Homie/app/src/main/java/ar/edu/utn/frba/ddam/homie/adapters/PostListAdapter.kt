@@ -19,10 +19,7 @@ import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import kotlin.math.exp
 
-class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: (String) -> Unit, val onPostLike: (String, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
-//    lateinit var onPostClick : (String) -> Boolean;
-//    lateinit var onPostLike : (String, Boolean) -> Boolean;
-
+class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: (Int) -> Unit, val onPostLike: (Int, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
     companion object {
         private val TAG = "PostListAdapter"
     }
@@ -60,7 +57,7 @@ class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: 
         holder.setLike(post.like);
 
         holder.getCardLayout().setOnClickListener {
-            onPostClick(post.uid);
+            onPostClick(post.id);
         }
 
         holder.getLikeCheckBox().setOnCheckedChangeListener { buttonView, isChecked ->
@@ -70,7 +67,7 @@ class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: 
             } else {
                 cb.backgroundTintList = cb.context.getColorStateList(R.color.black);
             }
-            onPostLike(post.uid, isChecked);
+            onPostLike(post.id, isChecked);
         }
 
     }

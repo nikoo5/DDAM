@@ -73,4 +73,14 @@
 
     <string name="success_fetching_posts">Data syncronized</string>
     <string name="error_fetching_posts">Could´t update data.</string>
+    <string name="likes_remove_question_title">Remove like</string>
+    <string name="likes_remove_question_message">Are you sure you want to remove this like?</string>
+    <string name="language">Language</string>
+    <string name="automatic">Automatic</string>
+    <string name="spanish">Spanish</string>
+    <string name="english">English</string>
+    <string name="cancel">Cancel</string>
+    <string name="theme">Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
 </resources>

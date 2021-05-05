@@ -1,13 +1,16 @@
 package ar.edu.utn.frba.ddam.homie.activities
 
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -16,7 +19,11 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import ar.edu.utn.frba.ddam.homie.R
+import ar.edu.utn.frba.ddam.homie.helpers.LocaleManager
+import ar.edu.utn.frba.ddam.homie.helpers.Utils
+import com.bumptech.glide.util.Util
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        LocaleManager.updateLocale(baseContext, "en");
         setContentView(R.layout.activity_main)
 
         bnvMenu = findViewById(R.id.bnvMenu);
@@ -50,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_left, menu);
-        return true;
+        return false;
     }
 
     override fun onBackPressed() {
@@ -61,23 +69,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun settingHandler(menuItem : MenuItem) {
-        Snackbar.make(dlMain, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show();
-    }
-
     fun logOutHandler(menuItem : MenuItem) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(resources.getString(R.string.logout));
         builder.setMessage(resources.getString(R.string.logout_question))
 
-        builder.setPositiveButton(resources.getString(R.string.yes).toUpperCase(), DialogInterface.OnClickListener { dialog, which ->
+        builder.setPositiveButton(resources.getString(R.string.yes).toUpperCase(), DialogInterface.OnClickListener { dialog, _ ->
             dialog.dismiss();
             FirebaseAuth.getInstance().signOut();
             startActivity(Intent(this, LoginActivity::class.java));
             finish();
         })
 
-        builder.setNegativeButton(resources.getString(R.string.no).toUpperCase(), DialogInterface.OnClickListener { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.no).toUpperCase(), DialogInterface.OnClickListener { dialog, _ ->
             dialog.dismiss();
         })
 

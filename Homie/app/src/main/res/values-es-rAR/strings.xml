@@ -73,4 +73,14 @@
 
     <string name="success_fetching_posts">Datos actualizados</string>
     <string name="error_fetching_posts">No se pudo actualizar los datos.</string>
+    <string name="likes_remove_question_title">Quitar favorito</string>
+    <string name="likes_remove_question_message">Estas seguro de que deseas quitar este favorito?</string>
+    <string name="language">Idioma</string>
+    <string name="automatic">Automático</string>
+    <string name="spanish">Español</string>
+    <string name="english">Inglés</string>
+    <string name="cancel">Cancelar</string>
+    <string name="theme">Tema</string>
+    <string name="light">Claro</string>
+    <string name="dark">Oscuro</string>
 </resources>

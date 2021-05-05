@@ -9,7 +9,11 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.PreferenceManager
 import ar.edu.utn.frba.ddam.homie.R
+import ar.edu.utn.frba.ddam.homie.helpers.LocaleManager
+import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.google.firebase.auth.FirebaseAuth
 
 class SplashActivity : AppCompatActivity() {
@@ -25,11 +29,14 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        LocaleManager.updateLocale(baseContext, "en");
         mAuth = FirebaseAuth.getInstance();
 
         if (supportActionBar != null) supportActionBar?.hide();
 
         setContentView(R.layout.activity_splash)
+
+        Utils.updateDarkMode(baseContext);
 
         val currentUser = mAuth.currentUser;
         if(currentUser != null) {
