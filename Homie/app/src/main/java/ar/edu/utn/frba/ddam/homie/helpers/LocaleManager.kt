@@ -22,7 +22,7 @@ class LocaleManager {
 
         @TargetApi(Build.VERSION_CODES.N)
         fun updateResources(context: Context, language: String) : Context {
-            val locale = Locale("en");
+            val locale = Locale(language);
             Locale.setDefault(locale)
 
             val config = context.resources.configuration

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.ddam.homie.adapters
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.ColorFilter
@@ -19,7 +20,7 @@ import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import kotlin.math.exp
 
-class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: (Int) -> Unit, val onPostLike: (Int, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
+class PostListAdapter(private var context : Context?, private var postList: MutableList<Post>, val onPostClick: (Int) -> Unit, val onPostLike: (Int, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
     companion object {
         private val TAG = "PostListAdapter"
     }
@@ -40,16 +41,18 @@ class PostListAdapter(private var postList: MutableList<Post>, val onPostClick: 
 
     override fun onBindViewHolder(holder: PostHolder, position: Int) {
         val post = postList[position];
-
-        if(post.building.images.count() > 0) {
-            holder.setImage(post.building.images[0]);
+        val building = post.getBuilding(context!!)!!
+        val location = building.getLocation(context!!)!!
+        
+        if(building.images.count() > 0) {
+            holder.setImage(building.images[0]);
         }
 
         holder.setStatus(post.status);
         holder.setType(post.type);
-        holder.setTitle(post.building.type, post.building.surface_open, post.building.rooms);
-        holder.setAddress(post.building.location.address, post.building.location.number);
-        holder.setDistrict(post.building.location.district);
+        holder.setTitle(building.type, building.surfaceOpen, building.rooms);
+        holder.setAddress(location.address, location.number);
+        holder.setDistrict(location.district);
         holder.setPrice(post.price, post.currency);
         holder.setExpenses(post.expenses, post.currency);
 

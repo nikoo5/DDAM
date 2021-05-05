@@ -75,7 +75,7 @@ class NewUserFragment : Fragment() {
                             etNewUserPassword.editText?.setText("");
                             etNewUserRePassword.editText?.setText("");
 
-                            val user = mAuth.currentUser
+                            val user = mAuth.currentUser!!
 
                             val profileUpdate = UserProfileChangeRequest.Builder()
                                     .setDisplayName(name + "|" + lastname)

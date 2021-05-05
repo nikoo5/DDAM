@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ar.edu.utn.frba.ddam.homie.R
 import ar.edu.utn.frba.ddam.homie.activities.LoginActivity
 import ar.edu.utn.frba.ddam.homie.adapters.LikeListAdapter
+import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
 import ar.edu.utn.frba.ddam.homie.entities.Post
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -52,26 +53,31 @@ class LikesFragment : Fragment() {
         rvLikes = v.findViewById(R.id.rvLikes)
 
         llm = LinearLayoutManager(context);
-        likeListAdapter = LikeListAdapter(mutableListOf(), { }, { } );
-
         rvLikes.setHasFixedSize(true);
         rvLikes.layoutManager = llm;
-        rvLikes.adapter = likeListAdapter;
 
         return v;
     }
 
     override fun onStart() {
         super.onStart()
+        loadLikesFromLocal();
+        //loadLikes();
+    }
 
-        loadLikes();
+    fun loadLikesFromLocal() {
+        val user = LocalDatabase.getLocalDatabase(v.context)?.userDao()!!.getByDbId(mAuth.currentUser!!.uid)!!
+        val posts = user.getLikePosts(v.context)
+
+        likeListAdapter = LikeListAdapter(v.context, posts, onClick = { x -> onLikeOpen(x) }, onLongClick = { x -> onLikeRemove(x) });
+        rvLikes.adapter = likeListAdapter;
     }
 
     private fun loadLikes() {
-        var posts_likes : MutableList<Post> = mutableListOf();
-        var count : Int = 0;
+        var postsLikes : MutableList<Post> = mutableListOf();
+        var count : Int;
 
-        rootRef.child("likes/${mAuth.currentUser.uid}")
+        rootRef.child("likes/${mAuth.currentUser?.uid!!}")
                 .get()
                 .addOnSuccessListener { snap ->
                     val ids = snap.getValue<List<Int>>()
@@ -85,11 +91,11 @@ class LikesFragment : Fragment() {
                                     .get()
                                     .addOnSuccessListener { snap2 ->
                                         val post = snap2.children.first().getValue<Post>()!!;
-                                        posts_likes.add(post);
+                                        postsLikes.add(post);
 
                                         count--;
                                         if (count == 0) {
-                                            likeListAdapter = LikeListAdapter(posts_likes, onClick = { x -> onLikeOpen(x) }, onLongClick = { x -> onLikeRemove(x) });
+                                            likeListAdapter = LikeListAdapter(v.context, postsLikes, onClick = { x -> onLikeOpen(x) }, onLongClick = { x -> onLikeRemove(x) });
                                             rvLikes.adapter = likeListAdapter;
                                             Snackbar.make(v, resources.getString(R.string.success_fetching_posts), Snackbar.LENGTH_SHORT).show();
                                         }
@@ -112,12 +118,12 @@ class LikesFragment : Fragment() {
         builder.setTitle(resources.getString(R.string.likes_remove_question_title));
         builder.setMessage(resources.getString(R.string.likes_remove_question_message))
 
-        builder.setPositiveButton(resources.getString(R.string.yes).toUpperCase(), DialogInterface.OnClickListener { dialog, which ->
+        builder.setPositiveButton(resources.getString(R.string.yes).toUpperCase(), DialogInterface.OnClickListener { dialog, _ ->
             dialog.dismiss();
 
         })
 
-        builder.setNegativeButton(resources.getString(R.string.no).toUpperCase(), DialogInterface.OnClickListener { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.no).toUpperCase(), DialogInterface.OnClickListener { dialog, _ ->
             dialog.dismiss();
         })
 

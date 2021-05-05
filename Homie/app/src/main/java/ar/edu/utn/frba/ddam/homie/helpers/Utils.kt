@@ -16,25 +16,11 @@ class Utils {
         }
 
         fun generateHash(length: Int = 32): String {
-            var len : Int = 32;
-            if (length >= 1 && length <= 32) len = length;
-            val bytes = this.toString().toByteArray()
-            val md = MessageDigest.getInstance("SHA-256")
-            val digest = md.digest(bytes)
-            return digest.fold("", { str, it -> str + "%02x".format(it) }).substring(32 - len)
-        }
-
-        fun updateLocales(context: Context) {
-            val lang = PreferenceManager.getDefaultSharedPreferences(context).getString("lang", "")!!
-            val locale = Locale(lang)
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.setLocale(locale)
-            context.resources.configuration.updateFrom(config)
-//            context.resources.updateConfiguration(
-//                config,
-//                context.resources.displayMetrics
-//            )
+            val len = length.coerceIn(12, 32)
+            val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+            return (1..len)
+                    .map { allowedChars.random() }
+                    .joinToString("")
         }
 
         fun updateDarkMode(context: Context) {

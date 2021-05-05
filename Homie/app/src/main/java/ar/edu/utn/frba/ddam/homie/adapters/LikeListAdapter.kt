@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.ddam.homie.adapters
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,7 @@ import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.bumptech.glide.Glide
 import java.text.NumberFormat
 
-class LikeListAdapter(private var likesList: MutableList<Post>, val onClick: (Int) -> Unit, val onLongClick: (Int) -> Unit) : RecyclerView.Adapter<LikeListAdapter.LikesHolder>() {
+class LikeListAdapter(private var context : Context, private var likesList: MutableList<Post>, val onClick: (Int) -> Unit, val onLongClick: (Int) -> Unit) : RecyclerView.Adapter<LikeListAdapter.LikesHolder>() {
     companion object {
         private val TAG = "LikesListAdapter"
     }
@@ -38,13 +39,16 @@ class LikeListAdapter(private var likesList: MutableList<Post>, val onClick: (In
         val post = likesList[position];
 
         if(post.id > 0) {
-            if (post.building.images.count() > 0) {
-                holder.setImage(post.building.images[0]);
+            val building = post.getBuilding(context)!!
+            val location = building.getLocation(context)!!
+
+            if (building.images.count() > 0) {
+                holder.setImage(building.images[0]);
             }
 
             holder.setStatus(post.status);
-            holder.setTitle(post.building.type, post.building.surface_open, post.building.rooms);
-            holder.setAddress(post.building.location.address, post.building.location.number);
+            holder.setTitle(building.type, building.surfaceOpen, building.rooms);
+            holder.setAddress(location.address, location.number);
             holder.setPrice(post.price, post.currency);
             holder.setExpenses(post.expenses, post.currency);
 
@@ -94,11 +98,12 @@ class LikeListAdapter(private var likesList: MutableList<Post>, val onClick: (In
             tv.text = Utils.getString(view.context, "posts_status_${status}");
         }
 
-        fun setTitle(building_type : String, surface : Long, rooms : Int) {
+        fun setTitle(type : String, surface : Long, rooms : Int) {
             val tv = view.findViewById<TextView>(R.id.tvLikeTitle)
-            var txt : String = "${surface.toString()}m² · ${rooms.toString()} ${view.resources.getString(R.string.room)}";
+            var txt : String = "${Utils.getString(view.context, "buildings_types_${type}")} · ${surface.toString()}m² · ${rooms.toString()} ${view.resources.getString(R.string.room)}";
             if(rooms > 1) txt += "s";
             tv.text = txt;
+            tv.isSelected = true
         }
 
         fun setAddress(address : String, number : Int) {
