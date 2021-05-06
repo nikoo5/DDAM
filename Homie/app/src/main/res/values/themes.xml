@@ -24,6 +24,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
 
-        <item name="settingIconColor">@color/black</item>
+        <item name="settingIconColor">?attr/colorOnPrimary</item>
     </style>
 </resources>

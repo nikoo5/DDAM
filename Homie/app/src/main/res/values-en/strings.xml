@@ -83,4 +83,8 @@
     <string name="theme">Theme</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
+    <string name="error_profile_image">Error while trying to get profile image</string>
+    <string name="user_likes_count_message">You\'ve liked {count} posts</string>
+    <string name="user_comments_count_message">You\'ve commented {count} posts</string>
+    <string name="user_friends_count_message">You\'ve got {count} friends</string>
 </resources>

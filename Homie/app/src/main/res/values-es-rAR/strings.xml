@@ -83,4 +83,8 @@
     <string name="theme">Tema</string>
     <string name="light">Claro</string>
     <string name="dark">Oscuro</string>
+    <string name="error_profile_image">Error al obtener la imagen de perfil</string>
+    <string name="user_likes_count_message">Te han gustado {count} publicaciones</string>
+    <string name="user_comments_count_message">Has comentado {count} publicaciones</string>
+    <string name="user_friends_count_message">"Tienes {count} amigos"</string>
 </resources>

@@ -120,6 +120,7 @@
             android:button="@null"
             android:gravity="center"
             android:textSize="12sp"
+            android:alpha="0.6"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

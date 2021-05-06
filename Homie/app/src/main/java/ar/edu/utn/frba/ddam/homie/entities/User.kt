@@ -50,4 +50,16 @@ class User {
     fun getLikePosts(context : Context) : MutableList<Post> {
         return LocalDatabase.getLocalDatabase(context)?.postDao()?.getByUserId(id)!!
     }
+
+    fun getLikesCount(context: Context) : Int {
+        return LocalDatabase.getLocalDatabase(context)?.userDao()?.getPostsCount(id)!!
+    }
+
+    fun getCommentsCount(context: Context) : Int {
+        return 0
+    }
+
+    fun getFriendsCount(context: Context) : Int {
+        return 0
+    }
 }
