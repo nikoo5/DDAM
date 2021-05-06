@@ -15,6 +15,8 @@ import ar.edu.utn.frba.ddam.homie.activities.LoginActivity
 import ar.edu.utn.frba.ddam.homie.adapters.LikeListAdapter
 import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
 import ar.edu.utn.frba.ddam.homie.entities.Post
+import ar.edu.utn.frba.ddam.homie.entities.User
+import ar.edu.utn.frba.ddam.homie.entities.UserPosts
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -26,10 +28,9 @@ class LikesFragment : Fragment() {
     lateinit var rvLikes : RecyclerView
 
     lateinit var mAuth: FirebaseAuth
-    lateinit var db : FirebaseDatabase
-    lateinit var rootRef : DatabaseReference
-    lateinit var postsRef : DatabaseReference
-    lateinit var likesRef : DatabaseReference
+    lateinit var localDB : LocalDatabase
+
+    lateinit var user : User
 
     lateinit var llm : LinearLayoutManager
     lateinit var likeListAdapter : LikeListAdapter
@@ -37,10 +38,6 @@ class LikesFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance();
-        rootRef = db.reference;
-        postsRef = db.getReference("posts");
-        likesRef = db.getReference("likes");
     }
 
     override fun onCreateView(
@@ -49,6 +46,9 @@ class LikesFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         v =  inflater.inflate(R.layout.fragment_likes, container, false)
+
+        localDB = LocalDatabase.getLocalDatabase(v.context)!!
+        user = localDB.userDao().getByDbId(mAuth.currentUser!!.uid)!!
 
         rvLikes = v.findViewById(R.id.rvLikes)
 
@@ -66,61 +66,28 @@ class LikesFragment : Fragment() {
     }
 
     fun loadLikesFromLocal() {
-        val user = LocalDatabase.getLocalDatabase(v.context)?.userDao()!!.getByDbId(mAuth.currentUser!!.uid)!!
         val posts = user.getLikePosts(v.context)
 
         likeListAdapter = LikeListAdapter(v.context, posts, onClick = { x -> onLikeOpen(x) }, onLongClick = { x -> onLikeRemove(x) });
         rvLikes.adapter = likeListAdapter;
     }
 
-    private fun loadLikes() {
-        var postsLikes : MutableList<Post> = mutableListOf();
-        var count : Int;
-
-        rootRef.child("likes/${mAuth.currentUser?.uid!!}")
-                .get()
-                .addOnSuccessListener { snap ->
-                    val ids = snap.getValue<List<Int>>()
-                    if(ids != null) {
-                        count = ids.size
-                        for (id in ids) {
-                            val post = rootRef.child("posts")
-                                    .orderByKey()
-                                    .equalTo(id.toString())
-                                    .limitToFirst(1)
-                                    .get()
-                                    .addOnSuccessListener { snap2 ->
-                                        val post = snap2.children.first().getValue<Post>()!!;
-                                        postsLikes.add(post);
-
-                                        count--;
-                                        if (count == 0) {
-                                            likeListAdapter = LikeListAdapter(v.context, postsLikes, onClick = { x -> onLikeOpen(x) }, onLongClick = { x -> onLikeRemove(x) });
-                                            rvLikes.adapter = likeListAdapter;
-                                            Snackbar.make(v, resources.getString(R.string.success_fetching_posts), Snackbar.LENGTH_SHORT).show();
-                                        }
-                                    }
-                        }
-                    }
-                }
-                .addOnFailureListener {
-                    Snackbar.make(v, resources.getString(R.string.error_fetching_posts), Snackbar.LENGTH_SHORT).show();
-                }
-
-    }
-
     private fun onLikeOpen(id : Int) {
         Snackbar.make(v, "Click", Snackbar.LENGTH_SHORT).show();
     }
 
-    private fun onLikeRemove(id : Int) {
+    private fun onLikeRemove(postId : Int) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(resources.getString(R.string.likes_remove_question_title));
         builder.setMessage(resources.getString(R.string.likes_remove_question_message))
 
         builder.setPositiveButton(resources.getString(R.string.yes).toUpperCase(), DialogInterface.OnClickListener { dialog, _ ->
             dialog.dismiss();
-
+            val userPost = localDB.userPostDao().getByBothId(user.id, postId);
+            if(userPost != null) {
+                localDB.userPostDao().delete(userPost)
+                loadLikesFromLocal()
+            }
         })
 
         builder.setNegativeButton(resources.getString(R.string.no).toUpperCase(), DialogInterface.OnClickListener { dialog, _ ->

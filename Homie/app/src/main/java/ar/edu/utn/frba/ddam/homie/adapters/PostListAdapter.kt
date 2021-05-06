@@ -12,15 +12,18 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.graphics.toColor
 import androidx.recyclerview.widget.RecyclerView
 import ar.edu.utn.frba.ddam.homie.R
 import ar.edu.utn.frba.ddam.homie.entities.Post
+import ar.edu.utn.frba.ddam.homie.entities.User
 import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.bumptech.glide.Glide
+import com.google.android.material.color.MaterialColors
 import java.text.NumberFormat
 import kotlin.math.exp
 
-class PostListAdapter(private var context : Context?, private var postList: MutableList<Post>, val onPostClick: (Int) -> Unit, val onPostLike: (Int, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
+class PostListAdapter(private var context : Context?, private var user : User, private var postList: MutableList<Post>, val onPostClick: (Int) -> Unit, val onPostLike: (Int, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
     companion object {
         private val TAG = "PostListAdapter"
     }
@@ -43,11 +46,9 @@ class PostListAdapter(private var context : Context?, private var postList: Muta
         val post = postList[position];
         val building = post.getBuilding(context!!)!!
         val location = building.getLocation(context!!)!!
-        
-        if(building.images.count() > 0) {
-            holder.setImage(building.images[0]);
-        }
+        val like = post.getUserLike(context!!, user.id)
 
+        holder.setImage(context!!, building.images);
         holder.setStatus(post.status);
         holder.setType(post.type);
         holder.setTitle(building.type, building.surfaceOpen, building.rooms);
@@ -55,9 +56,7 @@ class PostListAdapter(private var context : Context?, private var postList: Muta
         holder.setDistrict(location.district);
         holder.setPrice(post.price, post.currency);
         holder.setExpenses(post.expenses, post.currency);
-
-        holder.getLikeCheckBox().setOnCheckedChangeListener {_, _ ->}
-        holder.setLike(post.like);
+        holder.setLike(context!!, like);
 
         holder.getCardLayout().setOnClickListener {
             onPostClick(post.id);
@@ -66,9 +65,9 @@ class PostListAdapter(private var context : Context?, private var postList: Muta
         holder.getLikeCheckBox().setOnCheckedChangeListener { buttonView, isChecked ->
             val cb = buttonView as CheckBox;
             if(isChecked) {
-                cb.backgroundTintList = cb.context.getColorStateList(R.color.red_900);
+                cb.backgroundTintList = context!!.getColorStateList(R.color.red_900);
             } else {
-                cb.backgroundTintList = cb.context.getColorStateList(R.color.black);
+                cb.backgroundTintList = ColorStateList.valueOf(MaterialColors.getColor(context!!, R.attr.colorOnPrimary, Color.BLACK))
             }
             onPostLike(post.id, isChecked);
         }
@@ -90,13 +89,17 @@ class PostListAdapter(private var context : Context?, private var postList: Muta
             return view.findViewById(R.id.cbPostLike)
         }
 
-        fun setImage(imgUrl : String) {
+        fun setImage(context : Context, images : MutableList<String>) {
             val img = view.findViewById<ImageView>(R.id.ivPostImage);
-            if (imgUrl != "") {
-                Glide.with(view.context)
-                    .load(imgUrl)
-                    .centerCrop()
-                    .into(img);
+            if(images.count() > 0) {
+                if (images.first() != "") {
+                    Glide.with(context)
+                            .load(images.first())
+                            .centerCrop()
+                            .into(img);
+                } else {
+                    img.setImageResource(R.drawable.no_image)
+                }
             } else {
                 img.setImageResource(R.drawable.no_image)
             }
@@ -109,24 +112,24 @@ class PostListAdapter(private var context : Context?, private var postList: Muta
             } else {
                 tv.visibility = View.INVISIBLE;
             }
-            tv.text = Utils.getString(view.context, "posts_status_" + status);
+            tv.text = Utils.getString(view.context, "posts_status_${status}");
         }
 
         fun setType(type : String) {
             val tv = view.findViewById<TextView>(R.id.tvPostType)
-            tv.text = Utils.getString(view.context, "posts_types_" + type);
+            tv.text = Utils.getString(view.context, "posts_types_${type}");
         }
 
         fun setTitle(building_type : String, surface : Long, rooms : Int) {
             val tv = view.findViewById<TextView>(R.id.tvPostTitle)
-            var txt : String = Utils.getString(view.context, "buildings_types_" + building_type) + " · " + surface.toString() + "m² · " + rooms.toString() + " " + view.resources.getString(R.string.room);
+            var txt : String = "${Utils.getString(view.context, "buildings_types_${building_type}")} · ${surface.toString()} m² · ${rooms.toString()} ${view.resources.getString(R.string.room)}";
             if(rooms > 1) txt += "s";
             tv.text = txt;
         }
 
         fun setAddress(address : String, number : Int) {
             val tv = view.findViewById<TextView>(R.id.tvPostAddress)
-            tv.text = address + " " + number.toString();
+            tv.text = "$address ${number.toString()}";
         }
 
         fun setDistrict(district : String) {
@@ -136,7 +139,7 @@ class PostListAdapter(private var context : Context?, private var postList: Muta
 
         fun setPrice(price : Int, currency : String) {
             val tv = view.findViewById<TextView>(R.id.tvPostPrice);
-            tv.text = currency + " " + NumberFormat.getIntegerInstance().format(price).replace(",", ".");
+            tv.text = "$currency ${NumberFormat.getIntegerInstance().format(price).replace(",", ".")}";
         }
 
         fun setExpenses(expenses : Int, currency: String) {
@@ -146,15 +149,18 @@ class PostListAdapter(private var context : Context?, private var postList: Muta
             } else {
                 tv.visibility = View.INVISIBLE
             }
-            tv.text = "+ " + currency + " " + NumberFormat.getIntegerInstance().format(expenses).replace(",", ".") + " " + view.resources.getString(R.string.expenses);
+            tv.text = "+ $currency ${NumberFormat.getIntegerInstance().format(expenses).replace(",", ".")} ${view.resources.getString(R.string.expenses)}";
         }
 
-        fun setLike(like : Boolean) {
+        fun setLike(context : Context, like : Boolean) {
             val cb = view.findViewById<CheckBox>(R.id.cbPostLike);
-            cb.isChecked = like;
+            cb.setOnCheckedChangeListener(null)
 
-            if(like) {
-                cb.backgroundTintList = cb.context.getColorStateList(R.color.red_900);
+            cb.isChecked = like;
+            if (like) {
+                cb.backgroundTintList = context.getColorStateList(R.color.red_900);
+            } else {
+                cb.backgroundTintList = ColorStateList.valueOf(MaterialColors.getColor(context, R.attr.colorOnPrimary, Color.BLACK))
             }
         }
     }

@@ -32,9 +32,6 @@ class Post {
     var lastUpdate : Date
 
     @Ignore
-    var like : Boolean = false
-
-    @Ignore
     constructor(id: Int, buildingId: Int, type: String, status : String, price: Int, expenses : Int, currency : String) {
         this.id = id
         this.dbId = Utils.generateHash(12)
@@ -60,5 +57,9 @@ class Post {
 
     fun getBuilding(context : Context) : Building? {
         return LocalDatabase.getLocalDatabase(context)?.buildingDao()?.getById(buildingId);
+    }
+
+    fun getUserLike(context : Context, userId : Int) : Boolean {
+        return (LocalDatabase.getLocalDatabase(context)?.postDao()?.getUserLikes(this.id, userId)!! > 0);
     }
 }

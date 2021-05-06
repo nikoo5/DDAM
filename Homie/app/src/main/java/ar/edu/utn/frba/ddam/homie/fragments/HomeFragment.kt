@@ -28,9 +28,9 @@ class HomeFragment : Fragment() {
     private lateinit var postsRef : DatabaseReference
     private lateinit var likesRef : DatabaseReference
 
-    private var localDB: LocalDatabase? = null
-    private var userDao : UserDao? = null
-    private var postDao : PostDao? = null
+    private lateinit var localDB: LocalDatabase
+
+    private lateinit var user : User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,19 +41,16 @@ class HomeFragment : Fragment() {
         likesRef = db.getReference("likes");
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_home, container, false)
 
-        localDB = LocalDatabase.getLocalDatabase(v.context)
-        postDao = localDB?.postDao()
-        userDao = localDB?.userDao()
+        localDB = LocalDatabase.getLocalDatabase(v.context)!!
 
         //val name = mAuth.currentUser?.displayName?.split('|')!!
         //LocalDatabase.initData(v.context, User(mAuth.currentUser?.uid!!, name[0], name[1], mAuth.currentUser?.email!!, "https://firebasestorage.googleapis.com/v0/b/homie-b5662.appspot.com/o/profile_pictures%2FeqgfQsrUqtTo8AaTS3nkS3Ca5G73%2FuLXIzdwgnKk7.jpg?alt=media&token=ed9091fb-7dbc-4fe3-b2cb-cb32bb64a9d1"))
+
+        user = localDB.userDao().getByDbId(mAuth.currentUser?.uid!!)!!;
 
         btn = v.findViewById(R.id.btn);
         rvPosts = v.findViewById(R.id.rvPosts)
@@ -67,11 +64,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadPostsFromLocal() {
-        val posts = postDao?.getAll()!!;
+        val posts = localDB.postDao().getAll();
         val llm = LinearLayoutManager(context);
         rvPosts.setHasFixedSize(true);
         rvPosts.layoutManager = llm;
-        val postListAdapter = PostListAdapter(context, posts, onPostClick = { x -> onPostClick(x) }, onPostLike = { x, y -> onPostLike(x, y)});
+        val postListAdapter = PostListAdapter(context, user, posts, onPostClick = { x -> onPostClick(x) }, onPostLike = { x, y -> onPostLike(x, y)});
         rvPosts.adapter = postListAdapter;
     }
 
@@ -91,15 +88,15 @@ class HomeFragment : Fragment() {
                         for (id in likes) {
                            for (i in posts.indices) {
                                if(posts[i].id == id) {
-                                   posts[i].like = true;
+                                   //posts[i].like = true;
                                    break;
                                }
                            }
                         }
                     }
                     .addOnCompleteListener {
-                        val postListAdapter = PostListAdapter(context, posts, onPostClick = { x -> onPostClick(x) }, onPostLike = { x, y -> onPostLike(x, y)});
-                        rvPosts.adapter = postListAdapter;
+                        //val postListAdapter = PostListAdapter(context, posts, onPostClick = { x -> onPostClick(x) }, onPostLike = { x, y -> onPostLike(x, y)});
+                        //rvPosts.adapter = postListAdapter;
                         //Snackbar.make(v, resources.getString(R.string.success_fetching_posts), Snackbar.LENGTH_SHORT).show();
                     }
             }
@@ -108,32 +105,20 @@ class HomeFragment : Fragment() {
             }
     }
 
-    fun onPostClick (id : Int) {
+    fun onPostClick (postId : Int) {
         Snackbar.make(v, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show();
     }
 
-    fun onPostLike (id : Int, like : Boolean) {
-        likesRef.child(mAuth.currentUser?.uid!!).get()
-            .addOnSuccessListener { dataSnapshot ->
-                var likes : MutableList<Int>? = dataSnapshot.getValue<MutableList<Int>>()
-                if(likes == null) likes = mutableListOf();
-
-                var update : Boolean = false;
-
-                val alreadyLike = likes.find { x -> x == id }
-                if(like && alreadyLike == null) {
-                    likes.add(id)
-                    update = true;
-                } else if (!like && alreadyLike != null) {
-                    likes.remove(id);
-                    update = true;
-                }
-
-                if(update) {
-                    likesRef.child(mAuth.currentUser?.uid!!).setValue(likes).addOnFailureListener {
-                        loadPosts();
-                    }
-                }
+    fun onPostLike (postId : Int, like : Boolean) {
+        val userPost = localDB.userPostDao().getByBothId(user.id, postId);
+        if(userPost != null) {
+            if(!like) {
+                localDB.userPostDao().delete(userPost);
             }
+        } else {
+            if(like) {
+                localDB.userPostDao().insert(UserPosts(user.id, postId))
+            }
+        }
     }
 }

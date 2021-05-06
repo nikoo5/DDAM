@@ -15,6 +15,9 @@ interface PostDao {
     @Query("SELECT p.* FROM posts p JOIN users_posts up ON up.post_id = p.id JOIN users u ON u.id = up.user_id WHERE u.id = :id")
     fun getByUserId(id : Int) : MutableList<Post>
 
+    @Query("SELECT COUNT(p.id) FROM posts p JOIN users_posts up ON up.post_id = p.id JOIN users u ON u.id = up.user_id WHERE p.id = :postId AND u.id = :userId")
+    fun getUserLikes(postId : Int, userId : Int) : Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(post: Post?) : Long
 
