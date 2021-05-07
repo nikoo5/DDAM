@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.*
 import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
 import ar.edu.utn.frba.ddam.homie.helpers.Utils
+import java.text.NumberFormat
 import java.util.*
 
 @Entity(tableName = "posts",
@@ -60,6 +61,14 @@ class Post {
         this.currency = ""
         this.contactPhone = ""
         this.lastUpdate = Date()
+    }
+
+    fun getPrice() : String {
+        return "$currency ${NumberFormat.getIntegerInstance().format(price).replace(",", ".")}"
+    }
+
+    fun getExpenses() : String {
+        return "$currency ${NumberFormat.getIntegerInstance().format(expenses).replace(",", ".")}"
     }
 
     fun getBuilding(context : Context) : Building? {

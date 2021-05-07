@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import ar.edu.utn.frba.ddam.homie.R
 import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
 import ar.edu.utn.frba.ddam.homie.entities.User
+import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -103,7 +104,7 @@ class UserFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        loadUserImage(user.image)
+        Utils.setImage(v.context, v, ivUserImage, pbUserLoading, user.image, R.drawable.ic_user_solid, resources.getString(R.string.error_profile_image))
         loadUserData(user)
     }
 
@@ -112,33 +113,5 @@ class UserFragment : Fragment() {
         tvUserLikesCount.text = likesCount.toString()
         tvUserCommentsCount.text = commentsCount.toString()
         tvUserFriendsCount.text = friendsCount.toString()
-    }
-
-    private fun loadUserImage(imgUrl: String) {
-        pbUserLoading.visibility = View.VISIBLE
-        if (imgUrl != "") {
-            Glide.with(v.context)
-                    .load(imgUrl)
-//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-//                    .skipMemoryCache(true)
-                    .centerCrop()
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                            ivUserImage.setImageResource(R.drawable.ic_user_solid)
-                            pbUserLoading.visibility = View.INVISIBLE
-                            Snackbar.make(v, resources.getString(R.string.error_profile_image), Snackbar.LENGTH_SHORT).show()
-                            return true
-                        }
-
-                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                            pbUserLoading.visibility = View.INVISIBLE
-                            return false
-                        }
-                    })
-                    .into(ivUserImage)
-        } else {
-            ivUserImage.setImageResource(R.drawable.ic_user_solid)
-            pbUserLoading.visibility = View.INVISIBLE
-        }
     }
 }

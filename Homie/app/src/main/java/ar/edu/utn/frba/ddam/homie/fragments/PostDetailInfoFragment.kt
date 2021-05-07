@@ -130,7 +130,12 @@ class PostDetailInfoFragment(postId : Int) : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        setImage(v.context, building.images)
+        if(building.images.count() > 0) {
+            Utils.setImage(v.context, v, ivPostDetailImage, pbPostDetailLoading, building.images.first(), R.drawable.no_image, resources.getString(R.string.error_post_detail_image))
+        } else {
+            pbPostDetailLoading.visibility = View.GONE
+            ivPostDetailImage.setImageResource(R.drawable.no_image)
+        }
 
         tvPostDetailType.text = "${Utils.getString(v.context, "posts_types_${post.type}")} · ${Utils.getString(v.context, "buildings_types_${building.type}")}"
 
@@ -141,14 +146,14 @@ class PostDetailInfoFragment(postId : Int) : Fragment() {
         }
         tvPostDetailStatus.text = Utils.getString(v.context, "posts_status_${post.status}")
 
-        tvPostDetailPrice.text = "${post.currency} ${NumberFormat.getIntegerInstance().format(post.price).replace(",", ".")}";
+        tvPostDetailPrice.text = post.getPrice()
 
         if(post.expenses > 0) {
             tvPostDetailExpenses.visibility = View.VISIBLE
         } else {
             tvPostDetailExpenses.visibility = View.GONE
         }
-        tvPostDetailExpenses.text = "+ ${post.currency} ${NumberFormat.getIntegerInstance().format(post.expenses).replace(",", ".")} ${resources.getString(R.string.expenses)}";
+        tvPostDetailExpenses.text = post.getExpenses()
 
         tvPostDetailTotalSize.text = resources.getString(R.string.post_detail_total).replace("{count}", building.surfaceOpen.toString())
         tvPostDetailCoveredSize.text = resources.getString(R.string.post_detail_covered).replace("{count}", building.surface.toString())
@@ -186,39 +191,6 @@ class PostDetailInfoFragment(postId : Int) : Fragment() {
     override fun onLowMemory() {
         super.onLowMemory()
         mvPostDetailMap.onLowMemory()
-    }
-
-    fun setImage(context : Context, images : MutableList<String>) {
-        if(images.count() > 0) {
-            pbPostDetailLoading.visibility = View.VISIBLE
-            if (images.first() != "") {
-                Glide.with(v.context)
-                    .load(images.first())
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .centerCrop()
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                            ivPostDetailImage.setImageResource(R.drawable.ic_user_solid)
-                            pbPostDetailLoading.visibility = View.INVISIBLE
-                            Snackbar.make(v, resources.getString(R.string.error_post_detail_image), Snackbar.LENGTH_SHORT).show()
-                            return true
-                        }
-
-                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                            pbPostDetailLoading.visibility = View.INVISIBLE
-                            return false
-                        }
-                    })
-                    .into(ivPostDetailImage)
-            } else {
-                ivPostDetailImage.setImageResource(R.drawable.ic_user_solid)
-                pbPostDetailLoading.visibility = View.INVISIBLE
-            }
-        } else {
-            pbPostDetailLoading.visibility = View.GONE
-            ivPostDetailImage.setImageResource(R.drawable.no_image)
-        }
     }
 
     fun setMapLocation(map : GoogleMap, position : LatLng) {

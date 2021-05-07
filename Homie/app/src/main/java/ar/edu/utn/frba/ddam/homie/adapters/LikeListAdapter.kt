@@ -76,14 +76,7 @@ class LikeListAdapter(private var context : Context, private var likesList: Muta
 
         fun setImage(imgUrl : String) {
             val img = view.findViewById<ImageView>(R.id.ivLikeImage);
-            if (imgUrl != "") {
-                Glide.with(view.context)
-                        .load(imgUrl)
-                        .centerCrop()
-                        .into(img);
-            } else {
-                img.setImageResource(R.drawable.no_image)
-            }
+            Utils.setImage(view.context, view, img, null, imgUrl, R.drawable.no_image, view.context.resources.getString(R.string.error_post_detail_image))
         }
 
         fun setStatus(status : String) {

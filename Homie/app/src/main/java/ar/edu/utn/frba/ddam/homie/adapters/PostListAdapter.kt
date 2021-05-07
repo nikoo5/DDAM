@@ -92,14 +92,7 @@ class PostListAdapter(private var context : Context?, private var user : User, p
         fun setImage(context : Context, images : MutableList<String>) {
             val img = view.findViewById<ImageView>(R.id.ivPostImage);
             if(images.count() > 0) {
-                if (images.first() != "") {
-                    Glide.with(context)
-                            .load(images.first())
-                            .centerCrop()
-                            .into(img);
-                } else {
-                    img.setImageResource(R.drawable.no_image)
-                }
+                Utils.setImage(view.context, view, img, null, images.first(), R.drawable.no_image, view.context.resources.getString(R.string.error_post_detail_image))
             } else {
                 img.setImageResource(R.drawable.no_image)
             }
