@@ -7,6 +7,7 @@
 
     <string name="home">Inicio</string>
     <string name="likes">Favoritos</string>
+    <string name="map">Mapa</string>
     <string name="user">Usuario</string>
     <string name="settings">Ajustes</string>
 
@@ -93,4 +94,19 @@
     <string name="user_likes_count_message">Te han gustado {count} publicaciones</string>
     <string name="user_comments_count_message">Has comentado {count} publicaciones</string>
     <string name="user_friends_count_message">Tienes {count} amigos</string>
+
+    <string name="post_detail">Detalles</string>
+    <string name="post_detail_info">Información</string>
+    <string name="post_detail_images">Imágenes</string>
+    <string name="post_detail_total">{count} m² Total</string>
+    <string name="post_detail_covered">{count} m² Cubierta</string>
+    <string name="bathroom">Baño</string>
+    <string name="bedroom">Dormitorio</string>
+    <string name="antique">Antigüedad</string>
+    <string name="error_post_detail_image">Error al obtener la imagen de la publicación</string>
+
+    <string name="contact_whatsapp">Contactar por WhatsApp</string>
+    <string name="whatsapp_contact_message">Hola!\nMe contacto desde la App Homie!\nMi nombre es {display_name}\nEstoy interesado en la propiedad de {address}</string>
+    <string name="no_whatsapp">No tienes WhatsApp instalado!</string>
+
 </resources>

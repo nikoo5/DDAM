@@ -1,27 +1,21 @@
 package ar.edu.utn.frba.ddam.homie.fragments
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ar.edu.utn.frba.ddam.homie.R
-import ar.edu.utn.frba.ddam.homie.activities.LoginActivity
 import ar.edu.utn.frba.ddam.homie.adapters.LikeListAdapter
 import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
-import ar.edu.utn.frba.ddam.homie.entities.Post
 import ar.edu.utn.frba.ddam.homie.entities.User
-import ar.edu.utn.frba.ddam.homie.entities.UserPosts
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.getValue
 
 class LikesFragment : Fragment() {
     lateinit var v : View
@@ -72,8 +66,9 @@ class LikesFragment : Fragment() {
         rvLikes.adapter = likeListAdapter;
     }
 
-    private fun onLikeOpen(id : Int) {
-        Snackbar.make(v, "Click", Snackbar.LENGTH_SHORT).show();
+    private fun onLikeOpen(postId: Int) {
+        val action = LikesFragmentDirections.likesToPostDetail(postId)
+        v.findNavController().navigate(action);
     }
 
     private fun onLikeRemove(postId : Int) {

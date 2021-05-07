@@ -18,4 +18,6 @@
     <color name="secondaryLightColor">#9c786c</color>
     <color name="secondaryDarkColor">#40241a</color>
     <color name="secondaryTextColor">#ffffff</color>
+
+    <color name="whatsapp">#075e54</color>
 </resources>

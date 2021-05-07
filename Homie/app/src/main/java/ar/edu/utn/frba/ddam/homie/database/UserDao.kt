@@ -14,6 +14,12 @@ interface UserDao {
     @Query("SELECT COUNT(p.id) FROM posts p JOIN users_posts up ON up.post_id = p.id JOIN users u ON u.id = up.user_id WHERE u.id = :id")
     fun getPostsCount(id : Int) : Int
 
+    @Query("SELECT 0 WHERE :id = :id")
+    fun getCommentsCount(id : Int) : Int
+
+    @Query("SELECT 0 WHERE :id = :id")
+    fun getFriendsCount(id : Int) : Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(user: User?) : Long
 

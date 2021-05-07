@@ -108,7 +108,7 @@ class UserFragment : Fragment() {
     }
 
     private fun loadUserData(user: User) {
-        tvUserDisplayname.text = "${user.name} ${user.lastName}"
+        tvUserDisplayname.text = user.getDisplayName()
         tvUserLikesCount.text = likesCount.toString()
         tvUserCommentsCount.text = commentsCount.toString()
         tvUserFriendsCount.text = friendsCount.toString()

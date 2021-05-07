@@ -14,7 +14,8 @@ import ar.edu.utn.frba.ddam.homie.helpers.Utils
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LocaleManager.updateLocale(baseContext, "en");
+        LocaleManager.updateLocale(baseContext, PreferenceManager.getDefaultSharedPreferences(baseContext).getString("lang", "auto")!!);
+
         setContentView(R.layout.activity_settings)
         supportFragmentManager
                 .beginTransaction()

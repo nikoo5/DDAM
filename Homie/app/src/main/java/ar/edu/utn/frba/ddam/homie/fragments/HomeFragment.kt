@@ -6,17 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ar.edu.utn.frba.ddam.homie.R
 import ar.edu.utn.frba.ddam.homie.adapters.PostListAdapter
 import ar.edu.utn.frba.ddam.homie.database.*
 import ar.edu.utn.frba.ddam.homie.entities.*
-import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.getValue
 
 class HomeFragment : Fragment() {
     private lateinit var v : View
@@ -24,9 +22,6 @@ class HomeFragment : Fragment() {
     private lateinit var rvPosts : RecyclerView
 
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var db : FirebaseDatabase
-    private lateinit var postsRef : DatabaseReference
-    private lateinit var likesRef : DatabaseReference
 
     private lateinit var localDB: LocalDatabase
 
@@ -35,10 +30,6 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance();
-
-        postsRef = db.getReference("posts");
-        likesRef = db.getReference("likes");
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -68,45 +59,13 @@ class HomeFragment : Fragment() {
         val llm = LinearLayoutManager(context);
         rvPosts.setHasFixedSize(true);
         rvPosts.layoutManager = llm;
-        val postListAdapter = PostListAdapter(context, user, posts, onPostClick = { x -> onPostClick(x) }, onPostLike = { x, y -> onPostLike(x, y)});
+        val postListAdapter = PostListAdapter(context, user, posts, onPostClick = { x -> onPostOpen(x) }, onPostLike = { x, y -> onPostLike(x, y)});
         rvPosts.adapter = postListAdapter;
     }
 
-    private fun loadPosts() {
-        postsRef.get()
-            .addOnSuccessListener { dataSnapshot ->
-                val posts = dataSnapshot.getValue<MutableList<Post>>()!!
-                val llm = LinearLayoutManager(context);
-                rvPosts.setHasFixedSize(true);
-                rvPosts.layoutManager = llm;
-
-                likesRef.child(mAuth.currentUser?.uid!!).get()
-                    .addOnSuccessListener { dataSnapshot2 ->
-                        var likes : MutableList<Int>? = dataSnapshot2.getValue<MutableList<Int>>()
-                        if(likes == null) likes = mutableListOf();
-
-                        for (id in likes) {
-                           for (i in posts.indices) {
-                               if(posts[i].id == id) {
-                                   //posts[i].like = true;
-                                   break;
-                               }
-                           }
-                        }
-                    }
-                    .addOnCompleteListener {
-                        //val postListAdapter = PostListAdapter(context, posts, onPostClick = { x -> onPostClick(x) }, onPostLike = { x, y -> onPostLike(x, y)});
-                        //rvPosts.adapter = postListAdapter;
-                        //Snackbar.make(v, resources.getString(R.string.success_fetching_posts), Snackbar.LENGTH_SHORT).show();
-                    }
-            }
-            .addOnFailureListener {
-                Snackbar.make(v, resources.getString(R.string.error_fetching_posts), Snackbar.LENGTH_SHORT).show();
-            }
-    }
-
-    fun onPostClick (postId : Int) {
-        Snackbar.make(v, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show();
+    fun onPostOpen (postId : Int) {
+        val action = HomeFragmentDirections.homeToPostDetail(postId)
+        v.findNavController().navigate(action);
     }
 
     fun onPostLike (postId : Int, like : Boolean) {

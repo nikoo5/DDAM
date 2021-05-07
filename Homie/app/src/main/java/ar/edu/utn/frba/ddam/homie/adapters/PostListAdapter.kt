@@ -106,11 +106,12 @@ class PostListAdapter(private var context : Context?, private var user : User, p
         }
 
         fun setStatus(status : String) {
+            val cv = view.findViewById<CardView>(R.id.cvPostStatus)
             val tv = view.findViewById<TextView>(R.id.tvPostStatus)
             if (status == "reserved") {
-                tv.visibility = View.VISIBLE;
+                cv.visibility = View.VISIBLE;
             } else {
-                tv.visibility = View.INVISIBLE;
+                cv.visibility = View.INVISIBLE;
             }
             tv.text = Utils.getString(view.context, "posts_status_${status}");
         }

@@ -47,6 +47,10 @@ class User {
         this.lastModification = Date()
     }
 
+    fun getDisplayName() : String {
+        return "${this.name} ${this.lastName}"
+    }
+
     fun getLikePosts(context : Context) : MutableList<Post> {
         return LocalDatabase.getLocalDatabase(context)?.postDao()?.getByUserId(id)!!
     }
@@ -56,10 +60,10 @@ class User {
     }
 
     fun getCommentsCount(context: Context) : Int {
-        return 0
+        return LocalDatabase.getLocalDatabase(context)?.userDao()?.getCommentsCount(id)!!
     }
 
     fun getFriendsCount(context: Context) : Int {
-        return 0
+        return LocalDatabase.getLocalDatabase(context)?.userDao()?.getFriendsCount(id)!!
     }
 }

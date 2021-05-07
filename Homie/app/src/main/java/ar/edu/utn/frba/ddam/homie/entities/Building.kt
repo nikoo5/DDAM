@@ -22,37 +22,46 @@ class Building {
     @PrimaryKey(autoGenerate = true)
     var id : Int = 0
     @ColumnInfo(name = "db_id")
-    var dbId : String = ""
+    var dbId : String
     @ColumnInfo(name = "location_id")
     var locationId : Int
     var type : String
     var surface : Long
     var surfaceOpen : Long
     var rooms : Int
+    var bathrooms : Int
+    var bedrooms : Int
+    var antique : Int
     var features : MutableList<String> = mutableListOf()
     var images : MutableList<String> = mutableListOf()
     @ColumnInfo(name = "last_update")
     var lastUpdate : Date
 
     @Ignore
-    constructor(id: Int, locationId: Int, type: String, surface: Long, surfaceOpen: Long, rooms: Int) {
+    constructor(id: Int, dbId : String, locationId: Int, type: String, surface: Long, surfaceOpen: Long, rooms: Int, bathrooms: Int, bedrooms: Int, antique: Int) {
         this.id = id
-        this.dbId = Utils.generateHash(12)
+        this.dbId = dbId
         this.type = type
         this.locationId = locationId
         this.surface = surface
         this.surfaceOpen = surfaceOpen
         this.rooms = rooms
+        this.bathrooms = bathrooms
+        this.bedrooms = bedrooms
+        this.antique = antique
         this.lastUpdate = Date()
     }
 
     constructor() {
+        this.dbId = ""
         this.type = ""
         this.locationId = 0
         this.surface = 0
         this.surfaceOpen = 0
         this.rooms = 0
-        this.features = mutableListOf()
+        this.bathrooms = 0
+        this.bedrooms = 0
+        this.antique = 0
         this.lastUpdate = Date()
     }
 

@@ -33,21 +33,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dlMain : DrawerLayout
     private lateinit var bnvMenu : BottomNavigationView
     private lateinit var nvMenu : NavigationView
+
     private lateinit var nhfMain : NavHostFragment
     private lateinit var navController : NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LocaleManager.updateLocale(baseContext, "en");
-        setContentView(R.layout.activity_main)
+        LocaleManager.updateLocale(baseContext, PreferenceManager.getDefaultSharedPreferences(baseContext).getString("lang", "auto")!!);
 
+        setContentView(R.layout.activity_main)
+        dlMain = findViewById(R.id.dlMain);
         bnvMenu = findViewById(R.id.bnvMenu);
+        nvMenu = findViewById(R.id.nvMenu);
+
         nhfMain = supportFragmentManager.findFragmentById(R.id.nhfMain) as NavHostFragment;
         NavigationUI.setupWithNavController(bnvMenu, nhfMain.navController)
 
-        dlMain = findViewById(R.id.dlMain);
         navController = Navigation.findNavController(this, R.id.nhfMain);
-        nvMenu = findViewById(R.id.nvMenu);
         nvMenu.setupWithNavController(navController);
         NavigationUI.setupActionBarWithNavController(this, navController, dlMain);
     }
