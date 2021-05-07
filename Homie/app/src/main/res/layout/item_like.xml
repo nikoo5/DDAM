@@ -5,7 +5,8 @@
     android:id="@+id/item_like_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginTop="10dp"
     app:cardCornerRadius="10dp"
     app:cardElevation="10dp">
 
@@ -55,19 +56,29 @@
             app:layout_constraintStart_toEndOf="@+id/ivLikeImage"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvLikeStatus"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvLikeStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FF0000"
-            android:paddingHorizontal="5dp"
-            android:text="STATUS"
-            android:textColor="@color/white"
+            android:alpha="0.8"
+            app:cardBackgroundColor="@color/red_900"
+            app:cardCornerRadius="30dp"
             app:layout_constraintBottom_toBottomOf="@+id/ivLikeImage"
             app:layout_constraintEnd_toEndOf="@+id/ivLikeImage"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_constraintCircleRadius="2" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvLikeStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_margin="5dp"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="STATUS"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/tvLikePrice"

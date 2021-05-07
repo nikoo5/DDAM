@@ -18,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment() {
     private lateinit var v : View
-    private lateinit var btn : Button
     private lateinit var rvPosts : RecyclerView
 
     private lateinit var mAuth: FirebaseAuth
@@ -43,7 +42,6 @@ class HomeFragment : Fragment() {
 
         user = localDB.userDao().getByDbId(mAuth.currentUser?.uid!!)!!;
 
-        btn = v.findViewById(R.id.btn);
         rvPosts = v.findViewById(R.id.rvPosts)
 
         return v;

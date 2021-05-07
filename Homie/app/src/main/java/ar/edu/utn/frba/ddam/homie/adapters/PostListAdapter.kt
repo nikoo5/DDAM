@@ -147,8 +147,12 @@ class PostListAdapter(private var context : Context?, private var user : User, p
         }
 
         fun setLike(context : Context, like : Boolean) {
+            val cv = view.findViewById<CardView>(R.id.cvPostLikeHelper)
             val cb = view.findViewById<CheckBox>(R.id.cbPostLike);
             cb.setOnCheckedChangeListener(null)
+            cv.setOnClickListener {
+                cb.performClick()
+            }
 
             cb.isChecked = like;
             if (like) {

@@ -67,24 +67,26 @@ class Utils {
             }
         }
 
-        fun setImage(context : Context, view : View?, imageView : ImageView, progressBar: ProgressBar?, imageUrl : String, imgDefault : Int?, errorMessage : String) {
+        fun setImage(context : Context, view : View?, imageView : ImageView, progressBar: ProgressBar?, imageUrl : String, imgDefault : Int?, errorMessage : String, onReady : (Boolean) -> Unit = {_ ->}) {
             if(progressBar != null) progressBar.visibility = View.VISIBLE
             if (imageUrl != "") {
                 Glide.with(context)
                     .load(imageUrl)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
+                    //.diskCacheStrategy(DiskCacheStrategy.NONE)
+                    //.skipMemoryCache(true)
                     .centerCrop()
                     .listener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                             if(imgDefault != null) imageView.setImageResource(imgDefault)
                             if(progressBar != null) progressBar.visibility = View.GONE
                             if(view != null && errorMessage != "") Snackbar.make(view, errorMessage, Snackbar.LENGTH_SHORT).show()
+                            onReady(false);
                             return true
                         }
 
                         override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                             if(progressBar != null) progressBar.visibility = View.GONE
+                            onReady(true);
                             return false
                         }
                     })

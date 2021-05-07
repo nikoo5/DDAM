@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ar.edu.utn.frba.ddam.homie.R
 import ar.edu.utn.frba.ddam.homie.entities.Post
 import ar.edu.utn.frba.ddam.homie.helpers.Utils
-import com.bumptech.glide.Glide
 import java.text.NumberFormat
 
 class LikeListAdapter(private var context : Context, private var likesList: MutableList<Post>, val onClick: (Int) -> Unit, val onLongClick: (Int) -> Unit) : RecyclerView.Adapter<LikeListAdapter.LikesHolder>() {
@@ -65,10 +63,7 @@ class LikeListAdapter(private var context : Context, private var likesList: Muta
 
 
     class LikesHolder (v: View) : RecyclerView.ViewHolder(v) {
-        private var view: View
-        init {
-            this.view = v
-        }
+        private var view: View = v
 
         fun getCardLayout () : CardView {
             return view.findViewById(R.id.item_like_card_view)
@@ -80,14 +75,13 @@ class LikeListAdapter(private var context : Context, private var likesList: Muta
         }
 
         fun setStatus(status : String) {
+            val cv = view.findViewById<CardView>(R.id.cvLikeStatus)
             val tv = view.findViewById<TextView>(R.id.tvLikeStatus)
             if (status == "reserved") {
-                tv.visibility = View.VISIBLE;
+                cv.visibility = View.VISIBLE;
             } else {
-                tv.visibility = View.INVISIBLE;
+                cv.visibility = View.INVISIBLE;
             }
-            Log.d("TEST", status);
-            Log.d("TEST", "posts_status_${status}")
             tv.text = Utils.getString(view.context, "posts_status_${status}");
         }
 

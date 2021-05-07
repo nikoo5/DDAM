@@ -109,4 +109,5 @@
     <string name="whatsapp_contact_message">Hola!\nMe contacto desde la App Homie!\nMi nombre es {display_name}\nEstoy interesado en la propiedad de {address}</string>
     <string name="no_whatsapp">No tienes WhatsApp instalado!</string>
 
+    <string name="error_fetching_image">No se pudo obtener la imagen</string>
 </resources>
