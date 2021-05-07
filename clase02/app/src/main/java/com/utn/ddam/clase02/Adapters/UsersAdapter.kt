@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.utn.ddam.clase02.Entities.User
 import com.utn.ddam.clase02.R
-import kotlinx.android.synthetic.main.item_user.view.*
+import kotlinx.android.synthetic.main.user_item.view.*
 
 class UsersAdapter(val users : List<User>) : RecyclerView.Adapter<UsersAdapter.UserHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return UserHolder(layoutInflater.inflate(R.layout.item_user, parent, false))
+        return UserHolder(layoutInflater.inflate(R.layout.user_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: UserHolder, position: Int) {
