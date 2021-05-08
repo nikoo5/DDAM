@@ -110,4 +110,13 @@
     <string name="no_whatsapp">No tienes WhatsApp instalado!</string>
 
     <string name="error_fetching_image">No se pudo obtener la imagen</string>
+
+    <string name="permission_denied">Permiso Denegado</string>
+    <string name="permission_denied_message">Por favor permita los accesos desde la configuración.</string>
+    <string name="permisson_rejected">Para continuar debe permitir el acceso</string>
+
+    <string name="uploading">Subiendo...</string>
+    <string name="uploading_success">Imagen cargada correctamente</string>
+    <string name="uploading_error">Error en la subida</string>
+    <string name="uploading_cancel">Subida cancelada</string>
 </resources>

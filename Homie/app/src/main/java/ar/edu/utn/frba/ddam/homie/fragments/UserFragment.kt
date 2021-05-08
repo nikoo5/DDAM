@@ -1,8 +1,10 @@
 package ar.edu.utn.frba.ddam.homie.fragments
 
-import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
+import android.Manifest
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,23 +13,22 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import ar.edu.utn.frba.ddam.homie.R
 import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
 import ar.edu.utn.frba.ddam.homie.entities.User
+import ar.edu.utn.frba.ddam.homie.helpers.Permissions
 import ar.edu.utn.frba.ddam.homie.helpers.Utils
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.fragment_user.*
+import com.google.firebase.storage.FirebaseStorage
+import java.io.File
+import kotlin.math.roundToInt
+
 
 class UserFragment : Fragment() {
     private lateinit var v : View
+    private var PICK_IMAGE_REQUEST = 100
 
     private lateinit var ivUserImage : ImageView
     private lateinit var pbUserLoading : ProgressBar
@@ -42,8 +43,11 @@ class UserFragment : Fragment() {
     private lateinit var tvUserCommentsCount : TextView
     private lateinit var tvUserFriendsCount : TextView
 
+    private lateinit var cvUserImageUploading : CardView
+    private lateinit var pbUserImageUploading : ProgressBar
+
     private lateinit var mAuth: FirebaseAuth
-    private var db : LocalDatabase? = null
+    private lateinit var localDB : LocalDatabase
 
     private lateinit var user : User
     private var likesCount : Int = 0
@@ -62,7 +66,7 @@ class UserFragment : Fragment() {
         v = inflater.inflate(R.layout.fragment_user, container, false)
 
         mAuth = FirebaseAuth.getInstance()
-        db = LocalDatabase.getLocalDatabase(v.context)
+        localDB = LocalDatabase.getLocalDatabase(v.context)!!
 
         ivUserImage = v.findViewById(R.id.ivUserImage)
         pbUserLoading = v.findViewById(R.id.pbUserLoading)
@@ -77,14 +81,25 @@ class UserFragment : Fragment() {
         tvUserCommentsCount = v.findViewById(R.id.tvUserCommentsCount)
         tvUserFriendsCount = v.findViewById(R.id.tvUserFriendsCount)
 
-        user = db?.userDao()?.getByDbId(mAuth.currentUser?.uid!!)!!
+        cvUserImageUploading = v.findViewById(R.id.cvUserImageUploading)
+        pbUserImageUploading = v.findViewById(R.id.pbUserImageUploading)
+
+        user = localDB.userDao()?.getByDbId(mAuth.currentUser?.uid!!)!!
 
         likesCount = user.getLikesCount(v.context)
         commentsCount = user.getCommentsCount(v.context)
         friendsCount = user.getFriendsCount(v.context)
 
         cvUserEditUserImage.setOnClickListener {
-            Snackbar.make(v, resources.getString(R.string.future_feature), Snackbar.LENGTH_SHORT).show()
+            val permissions = Permissions(v.context, PICK_IMAGE_REQUEST)
+
+            if(permissions.askForPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                val intent = Intent(Intent.ACTION_PICK)
+                intent.type = "image/*"
+                startActivityForResult(intent, PICK_IMAGE_REQUEST)
+            } else {
+                Snackbar.make(v, v.context.resources.getString(R.string.permisson_rejected), Snackbar.LENGTH_SHORT).show()
+            }
         }
 
         llUserLikesCount.setOnClickListener {
@@ -103,9 +118,52 @@ class UserFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
         Utils.setImage(v.context, v, ivUserImage, pbUserLoading, user.image, R.drawable.ic_user_solid, resources.getString(R.string.error_profile_image))
         loadUserData(user)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
+            val filePath = data.data!!
+            val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+            val cursor = v.context.contentResolver!!.query(data.data!!, filePathColumn, null, null, null)!!
+            cursor.moveToFirst()
+            val columnIndex = cursor.getColumnIndex(filePathColumn[0])
+            val file = File(cursor.getString(columnIndex))
+            cursor.close()
+
+            val newName = "${Utils.generateHash(12)}.${file.extension}"
+            val storageRef = FirebaseStorage.getInstance().reference
+
+            cvUserImageUploading.visibility = View.VISIBLE
+            pbUserImageUploading.progress = 0
+
+            storageRef.child("profile_pictures/${mAuth.currentUser!!.uid}/${newName}")
+                    .putFile(filePath)
+                    .addOnProgressListener { task ->
+                        val progress = 100.0 * task.bytesTransferred / task.totalByteCount
+                        pbUserImageUploading.progress = progress.roundToInt()
+                    }
+                    .addOnCompleteListener { task ->
+                        cvUserImageUploading.visibility = View.GONE
+                        pbUserImageUploading.progress = 0
+
+                        if (task.isSuccessful) {
+                            task.result?.storage!!.downloadUrl.addOnSuccessListener { task2 ->
+                                val url = task2.toString()
+                                user.image = url
+                                localDB.userDao().update(user)
+                                Snackbar.make(v, resources.getString(R.string.uploading_success), Snackbar.LENGTH_SHORT).show()
+                                Utils.setImage(v.context, v, ivUserImage, pbUserLoading, user.image, R.drawable.ic_user_solid, resources.getString(R.string.error_profile_image))
+                            }
+                        } else if (task.isCanceled) {
+                            Snackbar.make(v, resources.getString(R.string.uploading_cancel), Snackbar.LENGTH_SHORT).show()
+                        } else {
+                            Snackbar.make(v, resources.getString(R.string.uploading_error), Snackbar.LENGTH_SHORT).show()
+                        }
+                    }
+        }
     }
 
     private fun loadUserData(user: User) {

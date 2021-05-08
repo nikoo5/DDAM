@@ -101,4 +101,11 @@
     <string name="whatsapp_contact_message">Hola!\nMe contacto desde la App Homie!\nMi nombre es {display_name}\nEstoy interesado en la propiedad de {address}</string>
     <string name="no_whatsapp">You don\'t have WhatsApp installed!</string>
     <string name="error_fetching_image">Error fetching image</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permission_denied_message">Please allow permissions from App Settings.</string>
+    <string name="permisson_rejected">To continue you must allow access</string>
+    <string name="uploading">Uploading...</string>
+    <string name="uploading_success">Image uploaded</string>
+    <string name="uploading_error">Upload error</string>
+    <string name="uploading_cancel">Upload canceled</string>
 </resources>
