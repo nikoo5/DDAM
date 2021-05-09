@@ -21,6 +21,8 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import ar.edu.utn.frba.ddam.homie.R
+import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
+import ar.edu.utn.frba.ddam.homie.entities.User
 import ar.edu.utn.frba.ddam.homie.helpers.LocaleManager
 import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.bumptech.glide.util.Util
@@ -28,6 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
     private lateinit var dlMain : DrawerLayout

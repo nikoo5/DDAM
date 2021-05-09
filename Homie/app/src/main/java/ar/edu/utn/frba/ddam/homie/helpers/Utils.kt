@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
@@ -24,10 +25,16 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 class Utils {
     companion object {
+        private val PREF_TAG = "USER_PREFERENCES"
+
         fun getString(context: Context, name: String) : String {
             val res: Resources = context.resources
             return res.getString(res.getIdentifier(name, "string", context.packageName))
@@ -100,6 +107,33 @@ class Utils {
                 if(imgDefault != null) imageView.setImageResource(imgDefault)
                 if(progressBar != null) progressBar.visibility = View.GONE
             }
+        }
+
+        fun getLastUpdate(context: Context) : Date {
+            val sharedPreferences = context.getSharedPreferences(PREF_TAG, Context.MODE_PRIVATE)
+            var date = Date(LocalDate.parse("01/01/2020", DateTimeFormatter.ofPattern("dd/MM/yyyy")).toEpochDay())
+            var time = sharedPreferences.getLong("LAST_UPDATE", 0.toLong())
+
+            if(time == 0.toLong()) {
+                time = date.time
+                setLastUpdate(context, date)
+            } else {
+                return Date(time)
+            }
+
+            return date
+        }
+
+        fun setLastUpdate(context: Context, date : Date) {
+            val sharedPreferences = context.getSharedPreferences(PREF_TAG, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putLong("LAST_UPDATE", date.time)
+            editor.apply()
+        }
+
+        fun clearPref(context: Context) {
+            val sharedPreferences = context.getSharedPreferences(PREF_TAG, Context.MODE_PRIVATE)
+            sharedPreferences.edit().clear().apply()
         }
     }
 }

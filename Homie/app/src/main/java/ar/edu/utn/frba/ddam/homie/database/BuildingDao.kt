@@ -2,6 +2,7 @@ package ar.edu.utn.frba.ddam.homie.database
 
 import androidx.room.*
 import ar.edu.utn.frba.ddam.homie.entities.Building
+import ar.edu.utn.frba.ddam.homie.entities.Post
 
 @Dao
 interface BuildingDao {
@@ -10,6 +11,9 @@ interface BuildingDao {
 
     @Query("SELECT * FROM buildings WHERE id = :id")
     fun getById(id : Int) : Building?
+
+    @Query("SELECT * FROM buildings WHERE db_id = :dbId")
+    fun getByDbId(dbId : String) : Building?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(building: Building?) : Long

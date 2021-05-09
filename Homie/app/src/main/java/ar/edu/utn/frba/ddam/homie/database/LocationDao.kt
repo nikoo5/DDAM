@@ -3,6 +3,7 @@ package ar.edu.utn.frba.ddam.homie.database
 import androidx.room.*
 import ar.edu.utn.frba.ddam.homie.entities.Building
 import ar.edu.utn.frba.ddam.homie.entities.Location
+import ar.edu.utn.frba.ddam.homie.entities.Post
 
 @Dao
 interface LocationDao {
@@ -11,6 +12,9 @@ interface LocationDao {
 
     @Query("SELECT * FROM locations WHERE id = :id")
     fun getById(id : Int) : Location?
+
+    @Query("SELECT * FROM locations WHERE db_id = :dbId")
+    fun getByDbId(dbId : String) : Location?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(location: Location?) : Long

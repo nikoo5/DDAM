@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.ddam.homie.fragments
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ar.edu.utn.frba.ddam.homie.R
 import ar.edu.utn.frba.ddam.homie.activities.MainActivity
+import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -82,6 +84,7 @@ class LoginFragment : Fragment() {
                     mAuth.signInWithEmailAndPassword(email, pass)
                         .addOnCompleteListener(requireActivity()) { task ->
                             if (task.isSuccessful) {
+                                Utils.clearPref(v.context);
                                 startActivity(Intent(requireContext(), MainActivity::class.java));
                                 requireActivity().finish();
                             } else {

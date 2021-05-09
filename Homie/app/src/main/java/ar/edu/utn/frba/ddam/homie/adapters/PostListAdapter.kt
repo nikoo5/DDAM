@@ -23,7 +23,7 @@ import com.google.android.material.color.MaterialColors
 import java.text.NumberFormat
 import kotlin.math.exp
 
-class PostListAdapter(private var context : Context?, private var user : User, private var postList: MutableList<Post>, val onPostClick: (Int) -> Unit, val onPostLike: (Int, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
+class PostListAdapter(private var context : Context?, private var user : User?, private var postList: MutableList<Post>, val onPostClick: (Int) -> Unit, val onPostLike: (Int, Boolean) -> Unit) : RecyclerView.Adapter<PostListAdapter.PostHolder>() {
     companion object {
         private val TAG = "PostListAdapter"
     }
@@ -37,8 +37,13 @@ class PostListAdapter(private var context : Context?, private var user : User, p
         return postList.size
     }
 
-    fun setData(newData: ArrayList<Post>) {
-        this.postList = newData
+    fun setPosts(posts: MutableList<Post>) {
+        this.postList = posts
+        this.notifyDataSetChanged()
+    }
+
+    fun setUser(newUser : User) {
+        this.user = newUser
         this.notifyDataSetChanged()
     }
 
@@ -46,7 +51,7 @@ class PostListAdapter(private var context : Context?, private var user : User, p
         val post = postList[position];
         val building = post.getBuilding(context!!)!!
         val location = building.getLocation(context!!)!!
-        val like = post.getUserLike(context!!, user.id)
+        val like = post.getUserLike(context!!, user!!.id)
 
         holder.setImage(context!!, building.images);
         holder.setStatus(post.status);

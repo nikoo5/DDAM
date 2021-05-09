@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.room.*
 import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
 import ar.edu.utn.frba.ddam.homie.helpers.Utils
+import com.google.firebase.Timestamp
 import java.text.NumberFormat
 import java.util.*
+import kotlin.collections.HashMap
+import kotlin.math.exp
 
 @Entity(tableName = "posts",
     indices = [
@@ -77,5 +80,39 @@ class Post {
 
     fun getUserLike(context : Context, userId : Int) : Boolean {
         return (LocalDatabase.getLocalDatabase(context)?.postDao()?.getUserLikes(this.id, userId)!! > 0);
+    }
+
+    fun getPostCloud(context: Context) : PostCloud {
+        val building = getBuilding(context)!!
+        return PostCloud(dbId, building.getBuildingCloud(context), type, status, price, expenses, currency, viewCount, contactPhone, lastUpdate)
+    }
+
+    fun update(post : PostCloud) {
+
+    }
+
+    class PostCloud(
+        var id : String,
+        var building : Building.BuildingCloud,
+        var type : String,
+        var status : String,
+        var price : Int,
+        var expenses : Int,
+        var currency : String,
+        var view_count : Int,
+        var contact_phone : String,
+        var last_update : Date
+    ) {
+        constructor(data : Map<String, Any>) : this(
+                data["id"] as String,
+                Building.BuildingCloud(data["building"] as Map<String, Any>),
+                data["type"] as String,
+                data["status"] as String,
+                (data["price"] as Long).toInt(),
+                (data["expenses"] as Long).toInt(),
+                data["currency"] as String,
+                (data["view_count"] as Long).toInt(),
+                data["contact_phone"] as String,
+                (data["last_update"] as Timestamp).toDate())
     }
 }

@@ -5,6 +5,9 @@ import ar.edu.utn.frba.ddam.homie.entities.User
 
 @Dao
 interface UserDao {
+    @Query("SELECT * FROM users")
+    fun getAll() : MutableList<User>
+
     @Query("SELECT * FROM users WHERE id = :id")
     fun getById(id : Int) : User?
 
