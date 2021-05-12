@@ -207,8 +207,8 @@ class HomeFragment : Fragment() {
                 .addOnCompleteListener { task ->
                     var loadLocal = true;
                     if(task.isSuccessful) {
-                        for(doc in task.result!!) {
-                            val data = doc.data;
+                        for(doc in task.result!!.documents) {
+                            val data = doc.data!!;
                             val post = localDb.postDao().getByDbId(data["post_id"].toString())
                             if (post != null) {
                                 var userPost = localDb.userPostDao().getByBothId(user!!.id, post.id);
@@ -227,8 +227,8 @@ class HomeFragment : Fragment() {
                             for (userPost in localDb.userPostDao().getByUserId(user!!.id)!!) {
                                 val userPostCloud = userPost.getUserPostCloud(v.context)
                                 var found = false
-                                for (doc in task.result!!) {
-                                    if (doc.data["post_id"].toString() == userPostCloud.post_id) {
+                                for (doc in task.result!!.documents) {
+                                    if (doc.data!!["post_id"].toString() == userPostCloud.post_id) {
                                         found = true;
                                         break;
                                     }
@@ -258,7 +258,7 @@ class HomeFragment : Fragment() {
                 .get(Source.SERVER)
                 .addOnCompleteListener { task ->
                     if(task.isSuccessful) {
-                        for(doc in task.result!!) {
+                        for(doc in task.result!!.documents) {
                             val post = Post.PostCloud(doc.data!!)
                             LocalDatabase.updatePostFromCloud(v.context, doc.id, post)
                         }
@@ -331,7 +331,7 @@ class HomeFragment : Fragment() {
                     .get(Source.SERVER)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            val data = task.result!!
+                            val data = task.result!!.documents
 
                             if (data.count() == 0 && add) {
                                 cloudDb.collection("likes").add(userPostCloud)

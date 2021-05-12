@@ -68,7 +68,7 @@ class User {
     }
 
     fun getUserCloud() : UserCloud {
-        return UserCloud(dbId, name, lastName,email, image, lastLogin, lastModification, mutableListOf())
+        return UserCloud(dbId, name, lastName,email, image, lastLogin, lastModification)
     }
 
     class UserCloud(
@@ -78,7 +78,6 @@ class User {
         var email : String,
         var image : String,
         var last_login : Date,
-        var last_modification : Date,
-        var likes : MutableList<String>
+        var last_modification : Date
     ) { }
 }

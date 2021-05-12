@@ -3,6 +3,9 @@ package ar.edu.utn.frba.ddam.homie.fragments
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -21,8 +24,12 @@ import ar.edu.utn.frba.ddam.homie.helpers.Permissions
 import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
+import java.io.InputStream
+import java.lang.Exception
+import java.util.*
 import kotlin.math.roundToInt
 
 
@@ -46,8 +53,14 @@ class UserFragment : Fragment() {
     private lateinit var cvUserImageUploading : CardView
     private lateinit var pbUserImageUploading : ProgressBar
 
+    private lateinit var cvUserImagePreview : CardView
+    private lateinit var cvUserImagePreviewConfirm : CardView
+    private lateinit var cvUserImagePreviewCancel : CardView
+    private lateinit var ivUserImagePreview : ImageView
+
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var localDB : LocalDatabase
+    private lateinit var localDb : LocalDatabase
+    private lateinit var cloudDb : FirebaseFirestore
 
     private lateinit var user : User
     private var likesCount : Int = 0
@@ -66,7 +79,8 @@ class UserFragment : Fragment() {
         v = inflater.inflate(R.layout.fragment_user, container, false)
 
         mAuth = FirebaseAuth.getInstance()
-        localDB = LocalDatabase.getLocalDatabase(v.context)!!
+        localDb = LocalDatabase.getLocalDatabase(v.context)!!
+        cloudDb = FirebaseFirestore.getInstance()
 
         ivUserImage = v.findViewById(R.id.ivUserImage)
         pbUserLoading = v.findViewById(R.id.pbUserLoading)
@@ -84,7 +98,12 @@ class UserFragment : Fragment() {
         cvUserImageUploading = v.findViewById(R.id.cvUserImageUploading)
         pbUserImageUploading = v.findViewById(R.id.pbUserImageUploading)
 
-        user = localDB.userDao()?.getByDbId(mAuth.currentUser?.uid!!)!!
+        cvUserImagePreview = v.findViewById(R.id.cvUserImagePreview)
+        cvUserImagePreviewConfirm = v.findViewById(R.id.cvUserImagePreviewConfirm)
+        cvUserImagePreviewCancel = v.findViewById(R.id.cvUserImagePreviewCancel)
+        ivUserImagePreview = v.findViewById(R.id.ivUserImagePreview)
+
+        user = localDb.userDao()?.getByDbId(mAuth.currentUser?.uid!!)!!
 
         likesCount = user.getLikesCount(v.context)
         commentsCount = user.getCommentsCount(v.context)
@@ -113,6 +132,11 @@ class UserFragment : Fragment() {
         llUserFriendsCount.setOnClickListener {
             Snackbar.make(v, resources.getString(R.string.user_friends_count_message).replace("{count}", friendsCount.toString()), Snackbar.LENGTH_SHORT).show()
         }
+
+        cvUserImagePreviewCancel.setOnClickListener {
+            cvUserImagePreview.visibility = View.GONE
+        }
+
         return v
     }
 
@@ -126,44 +150,75 @@ class UserFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
             val filePath = data.data!!
-            val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-            val cursor = v.context.contentResolver!!.query(data.data!!, filePathColumn, null, null, null)!!
-            cursor.moveToFirst()
-            val columnIndex = cursor.getColumnIndex(filePathColumn[0])
-            val file = File(cursor.getString(columnIndex))
-            cursor.close()
 
-            val newName = "${Utils.generateHash(12)}.${file.extension}"
-            val storageRef = FirebaseStorage.getInstance().reference
+            try {
+                val imageStream: InputStream = v.context.contentResolver.openInputStream(filePath)!!
+                val selectedImage : Bitmap = BitmapFactory.decodeStream(imageStream);
+                ivUserImagePreview.setImageBitmap(selectedImage);
+                cvUserImagePreview.visibility = View.VISIBLE
 
-            cvUserImageUploading.visibility = View.VISIBLE
-            pbUserImageUploading.progress = 0
+                cvUserImagePreviewConfirm.setOnClickListener {
+                    uploadImage(filePath)
+                }
+            } catch (e : Exception) {
+                cvUserImagePreview.visibility = View.GONE
+            }
+        }
+    }
 
-            storageRef.child("profile_pictures/${mAuth.currentUser!!.uid}/${newName}")
-                    .putFile(filePath)
-                    .addOnProgressListener { task ->
-                        val progress = 100.0 * task.bytesTransferred / task.totalByteCount
-                        pbUserImageUploading.progress = progress.roundToInt()
-                    }
-                    .addOnCompleteListener { task ->
-                        cvUserImageUploading.visibility = View.GONE
-                        pbUserImageUploading.progress = 0
+    fun uploadImage(filePath : Uri) {
+        cvUserImagePreview.visibility = View.GONE
+        cvUserImageUploading.visibility = View.VISIBLE
+        pbUserImageUploading.progress = 0
 
-                        if (task.isSuccessful) {
-                            task.result?.storage!!.downloadUrl.addOnSuccessListener { task2 ->
-                                val url = task2.toString()
-                                user.image = url
-                                localDB.userDao().update(user)
+        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = v.context.contentResolver!!.query(filePath, filePathColumn, null, null, null)!!
+        cursor.moveToFirst()
+        val columnIndex = cursor.getColumnIndex(filePathColumn[0])
+        val file = File(cursor.getString(columnIndex))
+        cursor.close()
+
+        val newName = "${Utils.generateHash(12)}.${file.extension}"
+
+        val storageRef = FirebaseStorage.getInstance().reference
+        storageRef.child("profile_pictures/${mAuth.currentUser!!.uid}/${newName}")
+                .putFile(filePath)
+                .addOnProgressListener { task ->
+                    val progress = 100.0 * task.bytesTransferred / task.totalByteCount
+                    pbUserImageUploading.progress = progress.roundToInt()
+                }
+                .addOnCompleteListener { task ->
+                    cvUserImageUploading.visibility = View.GONE
+                    pbUserImageUploading.progress = 0
+
+                    if (task.isSuccessful) {
+                        task.result?.storage!!.downloadUrl.addOnSuccessListener { task2 ->
+                            val url = task2.toString()
+                            user.image = url
+                            user.lastModification = Date()
+                            localDb.userDao().update(user)
+                            cloudDb.collection("users").whereEqualTo("id", user.dbId).limit(1).get().addOnCompleteListener { task ->
+                                if(task.isSuccessful) {
+                                    for(doc in task.result!!.documents) {
+                                        val userCloud = user.getUserCloud()
+                                        val data : MutableMap<String, Any> = mutableMapOf (
+                                            "image" to user.image,
+                                            "last_modification" to user.lastModification
+                                        )
+                                        cloudDb.collection("users").document(doc.id).update(data);
+                                    }
+                                }
+
                                 Snackbar.make(v, resources.getString(R.string.uploading_success), Snackbar.LENGTH_SHORT).show()
                                 Utils.setImage(v.context, v, ivUserImage, pbUserLoading, user.image, R.drawable.ic_user_solid, resources.getString(R.string.error_profile_image))
                             }
-                        } else if (task.isCanceled) {
-                            Snackbar.make(v, resources.getString(R.string.uploading_cancel), Snackbar.LENGTH_SHORT).show()
-                        } else {
-                            Snackbar.make(v, resources.getString(R.string.uploading_error), Snackbar.LENGTH_SHORT).show()
                         }
+                    } else if (task.isCanceled) {
+                        Snackbar.make(v, resources.getString(R.string.uploading_cancel), Snackbar.LENGTH_SHORT).show()
+                    } else {
+                        Snackbar.make(v, resources.getString(R.string.uploading_error), Snackbar.LENGTH_SHORT).show()
                     }
-        }
+                }
     }
 
     private fun loadUserData(user: User) {
