@@ -61,6 +61,7 @@ class PostListAdapter(private var context : Context?, private var user : User?, 
         holder.setDistrict(location.district);
         holder.setPrice(post.price, post.currency);
         holder.setExpenses(post.expenses, post.currency);
+        holder.setViewCount(post.viewCount + post.viewCountRelative)
         holder.setLike(context!!, like);
 
         holder.getCardLayout().setOnClickListener {
@@ -149,6 +150,11 @@ class PostListAdapter(private var context : Context?, private var user : User?, 
                 tv.visibility = View.INVISIBLE
             }
             tv.text = "+ $currency ${NumberFormat.getIntegerInstance().format(expenses).replace(",", ".")} ${view.resources.getString(R.string.expenses)}";
+        }
+
+        fun setViewCount(views : Int) {
+            val tv = view.findViewById<TextView>(R.id.tvPostViewCount)
+            tv.text = views.toString()
         }
 
         fun setLike(context : Context, like : Boolean) {

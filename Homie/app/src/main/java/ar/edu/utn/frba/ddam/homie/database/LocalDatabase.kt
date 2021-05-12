@@ -5,7 +5,7 @@ import androidx.room.*
 import ar.edu.utn.frba.ddam.homie.entities.*
 import kotlin.math.abs
 
-@Database(entities = [Post::class, Building::class, Location::class, User::class, UserPosts::class], version = 1, exportSchema = false)
+@Database(entities = [Post::class, Building::class, Location::class, User::class, UserPosts::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 public abstract class LocalDatabase : RoomDatabase() {
 
@@ -269,12 +269,13 @@ public abstract class LocalDatabase : RoomDatabase() {
             return 0 - building.id
         }
 
-        fun updatePostFromCloud(context: Context, data : Post.PostCloud) : Int {
+        fun updatePostFromCloud(context: Context, document : String, data : Post.PostCloud) : Int {
             val db = getLocalDatabase(context)!!
             val buildingId = updateBuildingFromCloud(context, data.building)
             var post = db.postDao().getByDbId(data.id)
             if(post != null) {
                 if(post.lastUpdate < data.last_update || buildingId > 0) {
+                    post.document = document
                     post.buildingId = abs(buildingId)
                     post.type = data.type
                     post.status = data.status
@@ -289,6 +290,7 @@ public abstract class LocalDatabase : RoomDatabase() {
                 }
             } else {
                 post = Post(0, data.id, abs(buildingId), data.type, data.status, data.price, data.expenses, data.currency, data.contact_phone)
+                post!!.document = document
                 post!!.viewCount = data.view_count
                 post!!.lastUpdate = data.last_update
                 return  db.postDao().insert(post).toInt()

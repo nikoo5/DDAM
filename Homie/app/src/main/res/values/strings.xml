@@ -119,4 +119,6 @@
     <string name="uploading_success">Imagen cargada correctamente</string>
     <string name="uploading_error">Error en la subida</string>
     <string name="uploading_cancel">Subida cancelada</string>
+    <string name="updated">Actualizado</string>
+    <string name="cant_update">No se pudo actualizar</string>
 </resources>

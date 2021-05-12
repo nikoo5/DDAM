@@ -25,6 +25,7 @@ class Post {
     var id : Int = 0
     @ColumnInfo(name = "db_id")
     var dbId : String
+    var document : String = ""
     @ColumnInfo(name = "building_id")
     var buildingId : Int
     var type : String
@@ -34,6 +35,8 @@ class Post {
     var currency : String
     @ColumnInfo(name = "view_count")
     var viewCount : Int = 0
+    @ColumnInfo(name = "view_count_relative")
+    var viewCountRelative : Int = 0
     @ColumnInfo(name = "contact_phone")
     var contactPhone : String
     @ColumnInfo(name = "last_update")
@@ -56,6 +59,7 @@ class Post {
 
     constructor(){
         this.dbId = ""
+        this.document = ""
         this.type = ""
         this.status = ""
         this.buildingId = 0
@@ -85,10 +89,6 @@ class Post {
     fun getPostCloud(context: Context) : PostCloud {
         val building = getBuilding(context)!!
         return PostCloud(dbId, building.getBuildingCloud(context), type, status, price, expenses, currency, viewCount, contactPhone, lastUpdate)
-    }
-
-    fun update(post : PostCloud) {
-
     }
 
     class PostCloud(

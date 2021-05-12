@@ -67,7 +67,7 @@ class User {
         return LocalDatabase.getLocalDatabase(context)?.userDao()?.getFriendsCount(id)!!
     }
 
-    fun getUserCloud(context: Context) : UserCloud {
+    fun getUserCloud() : UserCloud {
         return UserCloud(dbId, name, lastName,email, image, lastLogin, lastModification, mutableListOf())
     }
 

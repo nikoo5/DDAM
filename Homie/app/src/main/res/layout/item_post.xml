@@ -150,5 +150,25 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
+        <ImageView
+            android:id="@+id/ivPostViewCount"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:alpha="0.6"
+            app:layout_constraintEnd_toStartOf="@+id/cvPostLikeHelper"
+            app:layout_constraintTop_toTopOf="@+id/cvPostLikeHelper"
+            app:srcCompat="@drawable/ic_eye" />
+
+        <TextView
+            android:id="@+id/tvPostViewCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            app:layout_constraintEnd_toEndOf="@+id/ivPostViewCount"
+            app:layout_constraintStart_toStartOf="@+id/ivPostViewCount"
+            app:layout_constraintTop_toBottomOf="@+id/ivPostViewCount" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

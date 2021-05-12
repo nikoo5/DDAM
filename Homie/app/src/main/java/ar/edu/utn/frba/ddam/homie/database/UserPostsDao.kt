@@ -11,6 +11,9 @@ interface UserPostsDao {
     @Query("SELECT * FROM users_posts WHERE id = :id")
     fun getById(id : Int) : UserPosts?
 
+    @Query("SELECT * FROM users_posts WHERE user_id = :userId")
+    fun getByUserId(userId : Int) : MutableList<UserPosts>?
+
     @Query("SELECT * FROM users_posts WHERE user_id = :userId AND post_id = :postId")
     fun getByBothId(userId : Int, postId : Int) : UserPosts?
 

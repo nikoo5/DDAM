@@ -108,4 +108,6 @@
     <string name="uploading_success">Image uploaded</string>
     <string name="uploading_error">Upload error</string>
     <string name="uploading_cancel">Upload canceled</string>
+    <string name="updated">Updated</string>
+    <string name="cant_update">Couldn\'t update</string>
 </resources>

@@ -1,6 +1,8 @@
 package ar.edu.utn.frba.ddam.homie.entities
 
+import android.content.Context
 import androidx.room.*
+import ar.edu.utn.frba.ddam.homie.database.LocalDatabase
 import java.util.*
 
 @Entity(tableName = "users_posts",
@@ -39,4 +41,15 @@ class UserPosts {
         this.postId = 0
         this.date = Date()
     }
+
+    fun getUserPostCloud(context: Context) : UserPostCloud {
+        val user = LocalDatabase.getLocalDatabase(context)!!.userDao().getById(userId)!!;
+        val post = LocalDatabase.getLocalDatabase(context)!!.postDao().getById(postId)!!;
+        return UserPostCloud(user.dbId, post.dbId);
+    }
+
+    class UserPostCloud(
+            var user_id : String,
+            var post_id : String,
+    ) { }
 }
