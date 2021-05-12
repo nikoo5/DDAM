@@ -153,7 +153,7 @@ class PostDetailInfoFragment(postId : Int) : Fragment() {
         } else {
             tvPostDetailExpenses.visibility = View.GONE
         }
-        tvPostDetailExpenses.text = post.getExpenses()
+        tvPostDetailExpenses.text = "+ ${post.getExpenses()} ${resources.getString(R.string.expenses)}"
 
         tvPostDetailTotalSize.text = resources.getString(R.string.post_detail_total).replace("{count}", building.surfaceOpen.toString())
         tvPostDetailCoveredSize.text = resources.getString(R.string.post_detail_covered).replace("{count}", building.surface.toString())

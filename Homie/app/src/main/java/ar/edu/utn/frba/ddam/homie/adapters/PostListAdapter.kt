@@ -169,7 +169,7 @@ class PostListAdapter(private var context : Context?, private var user : User?, 
             if (like) {
                 cb.backgroundTintList = context.getColorStateList(R.color.red_900);
             } else {
-                cb.backgroundTintList = ColorStateList.valueOf(MaterialColors.getColor(context, R.attr.colorOnPrimary, Color.BLACK))
+                cb.backgroundTintList = ColorStateList.valueOf(MaterialColors.getColor(context, R.attr.customIconColor, Color.BLACK))
             }
         }
     }

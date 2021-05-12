@@ -67,7 +67,9 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_arrow_left" />
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/ic_arrow_left"
+                    app:tint="@color/white" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -83,7 +85,9 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_arrow_right" />
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/white" />
             </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -9,16 +9,28 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red_900">#b71c1c</color>
     <color name="green_900">#33691e</color>
+    <color name="gray_900">#212121</color>
 
-    <color name="primaryColor">#ffb74d</color>
-    <color name="primaryLightColor">#ffe97d</color>
-    <color name="primaryDarkColor">#c88719</color>
-    <color name="primaryTextColor">#000000</color>
+<!--    <color name="primaryColor">#ffb74d</color>-->
+<!--    <color name="primaryLightColor">#ffe97d</color>-->
+<!--    <color name="primaryDarkColor">#c88719</color>-->
+<!--    <color name="primaryTextColor">#000000</color>-->
 
-    <color name="secondaryColor">#6d4c41</color>
-    <color name="secondaryLightColor">#9c786c</color>
-    <color name="secondaryDarkColor">#40241a</color>
-    <color name="secondaryTextColor">#ffffff</color>
+<!--    <color name="secondaryColor">#6d4c41</color>-->
+<!--    <color name="secondaryLightColor">#9c786c</color>-->
+<!--    <color name="secondaryDarkColor">#40241a</color>-->
+<!--    <color name="secondaryTextColor">#ffffff</color>-->
+
+
+    <color name="primaryColor">#fbc02d</color>
+    <color name="primaryLightColor">#fff263</color>
+    <color name="primaryDarkColor">#c49000</color>
+    <color name="primaryTextColor">#212121</color>
+
+    <color name="secondaryColor">#212121</color>
+    <color name="secondaryLightColor">#484848</color>
+    <color name="secondaryDarkColor">#000000</color>
+    <color name="secondaryTextColor">#eeeeee</color>
 
     <color name="whatsapp">#075e54</color>
 </resources>
