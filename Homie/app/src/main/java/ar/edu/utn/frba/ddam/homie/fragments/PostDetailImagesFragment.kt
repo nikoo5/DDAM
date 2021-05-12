@@ -25,11 +25,14 @@ class PostDetailImagesFragment(postId : Int = 0) : Fragment() {
     private lateinit var ivPostDetailImageFull : ImageView
     private lateinit var pbPostDetailImageFull : ProgressBar
     private lateinit var rvPostDetailImages : RecyclerView
+    private lateinit var cvPostDetailImageBack : CardView
+    private lateinit var cvPostDetailImageForward : CardView
 
     private lateinit var llm : LinearLayoutManager
     private lateinit var imagesListAdapter : ImagesListAdapter
 
     private lateinit var images : MutableList<String>
+    private var currentPosition : Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,15 +51,25 @@ class PostDetailImagesFragment(postId : Int = 0) : Fragment() {
         ivPostDetailImageFull = v.findViewById(R.id.ivPostDetailImageFull)
         pbPostDetailImageFull = v.findViewById(R.id.pbPostDetailImageFull)
         rvPostDetailImages = v.findViewById(R.id.rvPostDetailImages)
+        cvPostDetailImageBack = v.findViewById(R.id.cvPostDetailImageBack)
+        cvPostDetailImageForward = v.findViewById(R.id.cvPostDetailImageForward)
 
         llm = LinearLayoutManager(context);
         rvPostDetailImages.setHasFixedSize(true);
         rvPostDetailImages.layoutManager = llm;
-        imagesListAdapter = ImagesListAdapter(v.context, mutableListOf(), onClick = {position -> onClick(position)})
+        imagesListAdapter = ImagesListAdapter(v.context, mutableListOf(), onClick = {position -> openImage(position)})
         rvPostDetailImages.adapter = imagesListAdapter
 
         cvPostDetailImageFull.setOnClickListener {
             cvPostDetailImageFull.visibility = View.GONE
+        }
+
+        cvPostDetailImageBack.setOnClickListener {
+            if(currentPosition > 0) openImage(--currentPosition);
+        }
+
+        cvPostDetailImageForward.setOnClickListener {
+            if(currentPosition < (images.size - 2)) openImage(++currentPosition);
         }
 
         return v
@@ -70,7 +83,8 @@ class PostDetailImagesFragment(postId : Int = 0) : Fragment() {
         imagesListAdapter.setData(images)
     }
 
-    fun onClick(position : Int) {
+    private fun openImage(position : Int) {
+        currentPosition = position
         val img = images[position]
         cvPostDetailImageFull.visibility = View.VISIBLE
         Utils.setImage(v.context, v, ivPostDetailImageFull, pbPostDetailImageFull, img, R.drawable.no_image, resources.getString(R.string.error_fetching_image)) { loaded ->
