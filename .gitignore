@@ -14,4 +14,5 @@
 .cxx
 local.properties
 /app/src/main/res/values/api-keys.xml
+/app/google-services.json
 /functions
