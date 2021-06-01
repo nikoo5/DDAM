@@ -1,23 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <ListPreference
-        android:icon="@drawable/ic_globe_americas"
-        android:negativeButtonText="@string/cancel"
-        app:defaultValue="auto"
-        app:entries="@array/lang_text"
-        app:entryValues="@array/lang_values"
-        app:key="lang"
-        app:title="@string/language"
-        app:useSimpleSummaryProvider="true" />
+    <ar.edu.utn.frba.ddam.homie.ui.CustomPreferenceCategory app:title="@string/settings_group_ui">
+        <ListPreference
+            android:icon="@drawable/ic_globe_americas"
+            android:negativeButtonText="@string/cancel"
+            app:defaultValue="auto"
+            app:entries="@array/lang_text"
+            app:entryValues="@array/lang_values"
+            app:key="lang"
+            app:title="@string/language"
+            app:useSimpleSummaryProvider="true" />
 
-    <ListPreference
-        android:icon="@drawable/ic_adjust"
-        android:negativeButtonText="@string/cancel"
-        app:defaultValue="auto"
-        app:entries="@array/theme_text"
-        app:entryValues="@array/theme_values"
-        app:key="theme"
-        app:title="@string/theme"
-        app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            android:icon="@drawable/ic_adjust"
+            android:negativeButtonText="@string/cancel"
+            app:defaultValue="auto"
+            app:entries="@array/theme_text"
+            app:entryValues="@array/theme_values"
+            app:key="theme"
+            app:title="@string/theme"
+            app:useSimpleSummaryProvider="true" />
+    </ar.edu.utn.frba.ddam.homie.ui.CustomPreferenceCategory>
+
+    <ar.edu.utn.frba.ddam.homie.ui.CustomPreferenceCategory app:title="@string/settings_group_pref">
+        <ListPreference
+            android:icon="@drawable/ic_bell"
+            android:negativeButtonText="@string/cancel"
+            app:defaultValue="auto"
+            app:entries="@array/splash_text"
+            app:entryValues="@array/splash_values"
+            app:key="splash"
+            app:title="@string/splash"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreferenceCompat
+            android:icon="@drawable/ic_hand"
+            app:key="welcome_message"
+            app:title="@string/welcome_message"
+            />
+
+    </ar.edu.utn.frba.ddam.homie.ui.CustomPreferenceCategory>
 </PreferenceScreen>

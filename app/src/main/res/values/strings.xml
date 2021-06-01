@@ -81,6 +81,7 @@
     <string name="cancel">Cancelar</string>
     <string name="language">Idioma</string>
     <string name="theme">Tema</string>
+    <string name="splash">Pantalla de Inicio</string>
     <string name="automatic">Automático</string>
 
     <string name="spanish">Español</string>
@@ -88,6 +89,9 @@
 
     <string name="light">Claro</string>
     <string name="dark">Oscuro</string>
+
+    <string name="always">Siempre</string>
+    <string name="never">Nunca</string>
 
     <string name="error_profile_image">Error al obtener la imagen de perfil</string>
 
@@ -121,4 +125,10 @@
     <string name="uploading_cancel">Subida cancelada</string>
     <string name="updated">Actualizado</string>
     <string name="cant_update">No se pudo actualizar</string>
+
+    <string name="settings_group_ui">Interfaz Grafica</string>
+    <string name="settings_group_pref">Preferencias</string>
+
+    <string name="welcome_message">Mensaje de Bienvenida</string>
+    <string name="welcome_message_text">Bienvenid@</string>
 </resources>

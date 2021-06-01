@@ -76,6 +76,15 @@ class HomeFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         //initCloudDB()
+        if(Utils.getStartApp(v.context)) {
+            Utils.setStartApp(v.context, false)
+            val user = localDb.userDao().getByDbId(mAuth.currentUser!!.uid)
+            var name = mAuth.currentUser!!.displayName?.split('|')!![0]
+            if (user != null) {
+                name = user.getDisplayName()
+            }
+            Utils.welcomeMessage(v, name)
+        }
     }
 
     private fun checkAppInit() {

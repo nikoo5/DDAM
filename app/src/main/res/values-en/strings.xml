@@ -82,8 +82,11 @@
     <string name="english">English</string>
     <string name="cancel">Cancel</string>
     <string name="theme">Theme</string>
+    <string name="splash">Start Screen</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
+    <string name="always">Always</string>
+    <string name="never">Never</string>
     <string name="error_profile_image">Error while trying to get profile image</string>
     <string name="user_likes_count_message">You\'ve liked {count} posts</string>
     <string name="user_comments_count_message">You\'ve commented {count} posts</string>
@@ -110,4 +113,8 @@
     <string name="uploading_cancel">Upload canceled</string>
     <string name="updated">Updated</string>
     <string name="cant_update">Couldn\'t update</string>
+    <string name="settings_group_ui">Graphics Interface</string>
+    <string name="settings_group_pref">Preferences</string>
+    <string name="welcome_message">Welcome Message</string>
+    <string name="welcome_message_text">Welcome</string>
 </resources>
