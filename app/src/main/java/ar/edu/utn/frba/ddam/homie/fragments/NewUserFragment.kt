@@ -67,6 +67,7 @@ class NewUserFragment : Fragment() {
 
                 mAuth.createUserWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(requireActivity()) { task ->
+                        Snackbar.make(v, resources.getString(R.string.new_user_success), Snackbar.LENGTH_SHORT).show()
                         if (task.isSuccessful) {
                             etNewUserName.editText?.setText("");
                             etNewUserLastname.editText?.setText("");
@@ -87,10 +88,9 @@ class NewUserFragment : Fragment() {
                                 } else {
                                     Snackbar.make(v, resources.getString(R.string.new_user_fail_update), Snackbar.LENGTH_SHORT).show()
                                 }
+                                startActivity(Intent(requireContext(), MainActivity::class.java));
+                                requireActivity().finish();
                             }
-
-                            startActivity(Intent(requireContext(), MainActivity::class.java));
-                            requireActivity().finish();
                         } else {
                             Snackbar.make(v, resources.getString(R.string.new_user_fail), Snackbar.LENGTH_SHORT).show()
                             bNewUserCreate.text = resources.getString(R.string.new_user_create);

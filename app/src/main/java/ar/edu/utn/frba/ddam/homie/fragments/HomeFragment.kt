@@ -79,7 +79,10 @@ class HomeFragment : Fragment() {
         if(Utils.getStartApp(v.context)) {
             Utils.setStartApp(v.context, false)
             val user = localDb.userDao().getByDbId(mAuth.currentUser!!.uid)
-            var name = mAuth.currentUser!!.displayName?.split('|')!![0]
+            var name : String = ""
+            if(mAuth.currentUser!!.displayName != null) {
+                name = mAuth.currentUser!!.displayName?.split('|')!![0]
+            }
             if (user != null) {
                 name = user.getDisplayName()
             }
