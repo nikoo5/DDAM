@@ -19,10 +19,14 @@ import ar.edu.utn.frba.ddam.homie.entities.UserPosts
 import ar.edu.utn.frba.ddam.homie.helpers.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.Source
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.gson.Gson
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
@@ -157,129 +161,157 @@ class HomeFragment : Fragment() {
     }
 
     private fun updatePosts(forceCloud : Boolean) {
+        var getFromCloud = forceCloud
         if(!forceCloud) {
-            if(localDb.postDao().getAll(1, 0).count() == 0) {
-                updatePostsFromCloud()
-            } else {
-                loadPostsFromLocal()
+            getFromCloud = localDb.postDao().getAll(1, 0).count() == 0;
+        }
+
+        if(getFromCloud) {
+            date = Date()
+
+            val parentJob = Job()
+            val scope = CoroutineScope(Dispatchers.Default + parentJob)
+
+            scope.launch() {
+                val docs = getPostsFromCloud()
+
+                for (doc in docs) updateLocalPostData(doc)
+
+                val views = getViewCountsFromCloud()
+
+                for (view in views) updateLocalViewsData(view);
+
+                val likes = getLikesFromCloud();
+
+                for (like in likes) {
+                    val postId = updateLocalLikesData(like)
+                    if (postId != "") {
+                        val post = getSinglePostFromCloud(postId)
+
+                        if (post != null) updateLocalPostData(post)
+
+                        updateLocalLikesData(like)
+                    }
+                }
+
+                syncLocalLikesToCloud(likes)
+
+                loadPostsFromLocalWithContext()
             }
         } else {
-            updatePostsFromCloud()
+            loadPostsFromLocal()
         }
     }
 
-    private fun updatePostsFromCloud() {
-        srlPosts.isRefreshing = true
-
-        date = Date()
-        cloudDb.collection("posts")
-                .whereGreaterThanOrEqualTo("last_update", Utils.getLastUpdate(v.context))
-                .limit(50)
-                .get(Source.SERVER)
-                .addOnCompleteListener { task ->
-                    if(task.isSuccessful) {
-                        for (document in task.result!!.documents) {
-                            val post = Post.PostCloud(document.data!!)
-                            LocalDatabase.updatePostFromCloud(v.context, document.id, post)
-                        }
-                        updateViewCountsFromCloud()
-                    } else {
-                        Snackbar.make(v, resources.getString(R.string.cant_update), Snackbar.LENGTH_SHORT).show()
-                        loadPostsFromLocal()
-                    }
-                }
+    suspend fun getPostsFromCloud() : List<DocumentSnapshot> {
+        try {
+            val result = cloudDb.collection("posts")
+                    .whereGreaterThanOrEqualTo("last_update", Utils.getLastUpdate(v.context))
+                    .limit(50)
+                    .get(Source.SERVER)
+                    .await();
+            return result.documents
+        } catch (e : Exception) {}
+        return mutableListOf()
     }
 
-    private fun updateViewCountsFromCloud() {
-        val ids : MutableList<String> = mutableListOf()
-        for(post in localDb.postDao().getAll()) {
-            ids.add(post.dbId)
+    suspend fun updateLocalPostData(document : DocumentSnapshot) {
+        val post = Post.PostCloud(document.data!!)
+        LocalDatabase.updatePostFromCloud(v.context, document.id, post)
+    }
+
+    suspend fun getViewCountsFromCloud() : List<DocumentSnapshot> {
+        try {
+            val ids: MutableList<String> = mutableListOf()
+            for (post in localDb.postDao().getAll()) {
+                ids.add(post.dbId)
+            }
+            val result = cloudDb.collection("views")
+                    .whereIn("post_id", ids)
+                    .get(Source.SERVER)
+                    .await()
+            return result.documents
+        } catch (e : Exception) { }
+        return mutableListOf()
+    }
+
+    suspend fun updateLocalViewsData(document: DocumentSnapshot) : Boolean {
+        val post = localDb.postDao().getByDbId(document.data!!["post_id"].toString())
+        if(post != null) {
+            post.viewCount = document.data!!["count"].toString().toInt()
+            localDb.postDao().update(post);
+            return true;
         }
-        cloudDb.collection("views")
-                .whereIn("post_id", ids)
-                .get(Source.SERVER)
-                .addOnCompleteListener { task ->
-                    if(task.isSuccessful) {
-                        for (doc in task.result!!.documents) {
-                            val post = localDb.postDao().getByDbId(doc.data!!["post_id"].toString())!!
-                            post.viewCount = doc.data!!["count"].toString().toInt()
-                            localDb.postDao().update(post);
-                        }
-                        updateLikesFromCloud();
-                    } else {
-                        loadPostsFromLocal()
-                    }
-                }
+        return false;
     }
 
-    private fun updateLikesFromCloud() {
-        cloudDb.collection("likes")
-                .whereEqualTo("user_id", user!!.dbId)
-                .get(Source.SERVER)
-                .addOnCompleteListener { task ->
-                    var loadLocal = true;
-                    if(task.isSuccessful) {
-                        for(doc in task.result!!.documents) {
-                            val data = doc.data!!;
-                            val post = localDb.postDao().getByDbId(data["post_id"].toString())
-                            if (post != null) {
-                                var userPost = localDb.userPostDao().getByBothId(user!!.id, post.id);
-                                if(userPost == null) {
-                                    userPost = UserPosts(user!!.id, post.id);
-                                    localDb.userPostDao().insert(userPost);
-                                }
-                            } else {
-                                loadLocal = false
-                                updatePostFromCloud(data["post_id"].toString())
-                                break;
-                            }
-                        }
-
-                        if(loadLocal) {
-                            for (userPost in localDb.userPostDao().getByUserId(user!!.id)!!) {
-                                val userPostCloud = userPost.getUserPostCloud(v.context)
-                                var found = false
-                                for (doc in task.result!!.documents) {
-                                    if (doc.data!!["post_id"].toString() == userPostCloud.post_id) {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    if(userPost.date > Utils.getLastUpdate(v.context)) {
-                                        cloudDb.collection("likes").add(userPostCloud);
-                                    } else {
-                                        localDb.userPostDao().delete(userPost);
-                                    }
-                                }
-                            }
-
-                            Snackbar.make(v, resources.getString(R.string.updated), Snackbar.LENGTH_SHORT).show()
-                            Utils.setLastUpdate(v.context, date)
-                        }
-                    }
-
-                    if (loadLocal) loadPostsFromLocal()
-                }
+    suspend fun getLikesFromCloud() : List<DocumentSnapshot> {
+        try {
+            val result = cloudDb.collection("likes")
+                    .whereEqualTo("user_id", user!!.dbId)
+                    .get(Source.SERVER)
+                    .await()
+            return result.documents
+        } catch (e : Exception) { }
+        return mutableListOf()
     }
 
-    private fun updatePostFromCloud(postId : String) {
-        cloudDb.collection("posts")
-                .whereEqualTo("post_id", postId)
-                .limit(1)
-                .get(Source.SERVER)
-                .addOnCompleteListener { task ->
-                    if(task.isSuccessful) {
-                        for(doc in task.result!!.documents) {
-                            val post = Post.PostCloud(doc.data!!)
-                            LocalDatabase.updatePostFromCloud(v.context, doc.id, post)
-                        }
-                    }
-
-                    updateLikesFromCloud()
-                }
+    suspend fun updateLocalLikesData(document: DocumentSnapshot) : String {
+        val data = document.data!!;
+        val postId = data["post_id"].toString()
+        val post = localDb.postDao().getByDbId(postId)
+        if (post != null) {
+            var userPost = localDb.userPostDao().getByBothId(user!!.id, post.id);
+            if(userPost == null) {
+                userPost = UserPosts(user!!.id, post.id);
+                localDb.userPostDao().insert(userPost);
+            }
+            return ""
+        }
+        return postId
     }
 
+    suspend fun getSinglePostFromCloud(postId : String) : DocumentSnapshot? {
+        try {
+            val result = cloudDb.collection("posts")
+                    .whereEqualTo("post_id", postId)
+                    .limit(1)
+                    .get(Source.SERVER)
+                    .await()
+            if(result.documents.count() == 1) {
+                return result.documents.first()
+            }
+        } catch (e : Exception) { }
+        return null
+    }
+
+    suspend fun syncLocalLikesToCloud(likes : List<DocumentSnapshot>) {
+        for (userPost in localDb.userPostDao().getByUserId(user!!.id)!!) {
+            val userPostCloud = userPost.getUserPostCloud(v.context)
+            var found = false
+            for (like in likes) {
+                if (like.data!!["post_id"].toString() == userPostCloud.post_id) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                if(userPost.date > Utils.getLastUpdate(v.context)) {
+                    cloudDb.collection("likes").add(userPostCloud).await()
+                } else {
+                    localDb.userPostDao().delete(userPost)
+                }
+            }
+        }
+    }
+
+    suspend fun loadPostsFromLocalWithContext() {
+        withContext(Dispatchers.Main) {
+            Snackbar.make(v, resources.getString(R.string.updated), Snackbar.LENGTH_SHORT).show()
+            Utils.setLastUpdate(v.context, date)
+            loadPostsFromLocal()
+        }
+    }
     private fun loadPostsFromLocal() {
         val posts = localDb.postDao().getAll();
         postListAdapter.setPosts(posts)
