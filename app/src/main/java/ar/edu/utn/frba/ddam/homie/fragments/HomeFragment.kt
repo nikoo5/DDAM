@@ -97,11 +97,13 @@ class HomeFragment : Fragment() {
     private fun checkAppInit() {
         user = localDb.userDao().getByDbId(mAuth.currentUser!!.uid)
         if (user == null) {
-            localDb.userDao().clearTable()
-            localDb.userDao().resetTable()
+            try {
+                localDb.userDao().clearTable()
+                localDb.userDao().resetTable()
 
-            localDb.userPostDao().clearTable()
-            localDb.userPostDao().resetTable()
+                localDb.userPostDao().clearTable()
+                localDb.userPostDao().resetTable()
+            } catch (e : Exception) { }
 
             cloudDb.collection("users")
                     .whereEqualTo("id", mAuth.currentUser!!.uid)
@@ -116,6 +118,7 @@ class HomeFragment : Fragment() {
                                 val data = task.result!!.documents.first().data!!
                                 user = User(mAuth.currentUser?.uid!!, data["name"].toString(), data["last_name"].toString(), data["email"].toString(), data["image"].toString())
                                 localDb.userDao().insert(user);
+                                user = localDb.userDao().getByDbId(mAuth.currentUser!!.uid)
                                 created = true
                             }
                         }
@@ -133,6 +136,7 @@ class HomeFragment : Fragment() {
 
                         postListAdapter.setUser(user!!)
                         updatePosts(false)
+                        //Snackbar.make(v, R.string.scroll_to_update, Snackbar.LENGTH_SHORT).show()
 
                         srlPosts.setOnRefreshListener {
                             updatePosts(true)
@@ -161,45 +165,49 @@ class HomeFragment : Fragment() {
     }
 
     private fun updatePosts(forceCloud : Boolean) {
-        var getFromCloud = forceCloud
-        if(!forceCloud) {
-            getFromCloud = localDb.postDao().getAll(1, 0).count() == 0;
-        }
-
-        if(getFromCloud) {
-            date = Date()
-
-            val parentJob = Job()
-            val scope = CoroutineScope(Dispatchers.Default + parentJob)
-
-            scope.launch() {
-                val docs = getPostsFromCloud()
-
-                for (doc in docs) updateLocalPostData(doc)
-
-                val views = getViewCountsFromCloud()
-
-                for (view in views) updateLocalViewsData(view);
-
-                val likes = getLikesFromCloud();
-
-                for (like in likes) {
-                    val postId = updateLocalLikesData(like)
-                    if (postId != "") {
-                        val post = getSinglePostFromCloud(postId)
-
-                        if (post != null) updateLocalPostData(post)
-
-                        updateLocalLikesData(like)
-                    }
-                }
-
-                syncLocalLikesToCloud(likes)
-
-                loadPostsFromLocalWithContext()
+        try {
+            var getFromCloud = forceCloud
+            if (!forceCloud) {
+                getFromCloud = localDb.postDao().getAll(1, 0).count() == 0;
             }
-        } else {
-            loadPostsFromLocal()
+
+            if (getFromCloud) {
+                date = Date()
+
+                val parentJob = Job()
+                val scope = CoroutineScope(Dispatchers.Default + parentJob)
+
+                scope.launch() {
+                    val docs = getPostsFromCloud()
+
+                    for (doc in docs) updateLocalPostData(doc)
+
+                    val views = getViewCountsFromCloud()
+
+                    for (view in views) updateLocalViewsData(view);
+
+                    val likes = getLikesFromCloud();
+
+                    for (like in likes) {
+                        val postId = updateLocalLikesData(like)
+                        if (postId != "") {
+                            val post = getSinglePostFromCloud(postId)
+
+                            if (post != null) updateLocalPostData(post)
+
+                            updateLocalLikesData(like)
+                        }
+                    }
+
+                    syncLocalLikesToCloud(likes)
+
+                    loadPostsFromLocalWithContext()
+                }
+            } else {
+                loadPostsFromLocal()
+            }
+        } catch (e : Exception) {
+            Snackbar.make(v, R.string.scroll_to_update, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -351,6 +359,10 @@ class HomeFragment : Fragment() {
     }
 
     fun onPostLike(postId: Int, like: Boolean) {
+        if(user!!.id == 0) {
+            user = localDb.userDao().getByDbId(mAuth.currentUser!!.uid)
+        }
+
         var userPost = localDb.userPostDao().getByBothId(user!!.id, postId);
         if(userPost != null) {
             if(!like) {

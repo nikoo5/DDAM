@@ -117,4 +117,7 @@
     <string name="settings_group_pref">Preferences</string>
     <string name="welcome_message">Welcome Message</string>
     <string name="welcome_message_text">Welcome</string>
+    <string name="turn_on_location">Turn on location!</string>
+    <string name="you">YOU</string>
+    <string name="scroll_to_update">Swipe for update</string>
 </resources>

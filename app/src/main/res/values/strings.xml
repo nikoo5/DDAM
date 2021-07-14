@@ -131,4 +131,9 @@
 
     <string name="welcome_message">Mensaje de Bienvenida</string>
     <string name="welcome_message_text">Bienvenid@</string>
+
+    <string name="turn_on_location">Encender ubicación!</string>
+    <string name="you">TÚ</string>
+
+    <string name="scroll_to_update">Deslizar para actualizar</string>
 </resources>
